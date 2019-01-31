@@ -17,12 +17,8 @@
   },
   "files": [
     ".babelrc",
-    "*.js"
+    "dist/*.js"
   ],
-  "bin": {
-    "lnd": "./dist/bin/lnd",
-    "lnd-install": "./dist/bin/lnd-install"
-  },
   "pre-push": [
     "lint",
     "test"
