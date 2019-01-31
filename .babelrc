@@ -1,0 +1,16 @@
+{
+  "env": {
+    "development": {
+      "sourceMaps": "inline",
+      "plugins": ["source-map-support"]
+    }
+  },
+  "presets": [
+    ["env", {
+      "targets": {
+          "node": "6.0"
+      }
+    }]
+  ],
+  "plugins": ["add-module-exports"]
+}
