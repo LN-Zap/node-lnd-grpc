@@ -17,7 +17,8 @@
   },
   "files": [
     ".babelrc",
-    "dist/*.js"
+    "dist",
+    "proto"
   ],
   "pre-push": [
     "lint",
