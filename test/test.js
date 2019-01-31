@@ -21,16 +21,6 @@ test('getProtoVersions', async t => {
   t.true(semver.valid(res[0]), 'should return valid semvers')
 })
 
-test('getProtoFile', async t => {
-  t.plan(1)
-  const res = await lnrpc.getProtoFile('0.5.1-beta')
-  t.equal(
-    res,
-    path.join(__dirname, '..', 'proto', 'lnrpc', '0.5.1-beta.proto'),
-    'should return the full path to the requested proto file',
-  )
-})
-
 test('getLatestProtoVersion', async t => {
   t.plan(1)
   const res = await lnrpc.getLatestProtoVersion()

@@ -21,29 +21,22 @@ export const getProtoDir = () => {
 }
 
 /**
- * Get the path to a specific rpc.proto file
- * @param  {String} version rpc.proto version to fetch (semver)
- * @return {String}         Path to the requested rpc.proto file.
- */
-export const getProtoFile = version => {
-  return join(getProtoDir(), `${version}.proto`)
-}
-
-/**
  * Get a list of all rpc.proto files that we provide.
  * @return {Promise<Array>} List of available rpc.proto files.
  */
-export const getProtoFiles = async () => {
-  const files = await fsReaddir(getProtoDir(), { withFileTypes: true })
-  return files.filter(dirent => !dirent.isDirectory()).map(dirent => join(getProtoDir(), dirent.name))
+export const getProtoFiles = async basepath => {
+  basepath = basepath || getProtoDir()
+  const files = await fsReaddir(basepath, { withFileTypes: true })
+  return files.filter(dirent => !dirent.isDirectory()).map(dirent => join(basepath, dirent.name))
 }
 
 /**
  * Get a list of all rpc.proto versions that we provide.
  * @return {Promise<Array>} List of available rpc.proto versions.
  */
-export const getProtoVersions = async () => {
-  const files = await fsReaddir(getProtoDir(), { withFileTypes: true })
+export const getProtoVersions = async basepath => {
+  basepath = basepath || getProtoDir()
+  const files = await fsReaddir(basepath, { withFileTypes: true })
   return files.filter(dirent => !dirent.isDirectory()).map(dirent => basename(dirent.name, '.proto'))
 }
 
@@ -51,8 +44,8 @@ export const getProtoVersions = async () => {
  * Get the latest rpc.proto version that we provide.
  * @return {Promise<String>} The latest rpc.proto version that we provide.
  */
-export const getLatestProtoVersion = async () => {
-  const versions = await getProtoVersions()
+export const getLatestProtoVersion = async basepath => {
+  const versions = await getProtoVersions(basepath)
   return semver.maxSatisfying(versions, `> ${GRPC_LOWEST_VERSION}`, { includePrerelease: true })
 }
 
@@ -60,8 +53,8 @@ export const getLatestProtoVersion = async () => {
  * Get the path to the latest rpc.proto version that we provide.
  * @return {Promise<String>} Path to the latest rpc.proto version that we provide.
  */
-export const getLatestProtoFile = async () => {
-  const latestProtoVersion = await getLatestProtoVersion()
+export const getLatestProtoFile = async basepath => {
+  const latestProtoVersion = await getLatestProtoVersion(basepath)
   return join(getProtoDir(), `${latestProtoVersion}.proto`)
 }
 
@@ -70,7 +63,7 @@ export const getLatestProtoFile = async () => {
  * @param  {[type]}  info [description]
  * @return {Promise}      [description]
  */
-export const getClosestProtoVersion = async versionString => {
+export const getClosestProtoVersion = async (versionString, basepath) => {
   debug('Testing version string: %s', versionString)
   let [version, commitString] = versionString.split(' ')
 
@@ -94,7 +87,7 @@ export const getClosestProtoVersion = async versionString => {
   debug('Determined semver as %s', version)
 
   // Get a list of all available proto files.
-  const versions = await getProtoVersions()
+  const versions = await getProtoVersions(basepath)
 
   // Find the closest match.
   debug('Searching for closest match for version %s in range: %o', version, versions)
@@ -108,7 +101,6 @@ export const getClosestProtoVersion = async versionString => {
 
 export default {
   getProtoDir,
-  getProtoFile,
 
   getProtoFiles,
   getProtoVersions,

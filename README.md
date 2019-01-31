@@ -29,10 +29,6 @@ npm install lnd-grpc --save
 
 Get the directory where rpc.proto files are stored.
 
-**getProtoFile(version):**
-
-Get the path to a specific rpc.proto file
-
 **async getProtoFiles():**
 
 Get a list of all rpc.proto files that we provide.
