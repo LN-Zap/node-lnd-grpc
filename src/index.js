@@ -26,8 +26,8 @@ export const getProtoDir = () => {
  */
 export const getProtoFiles = async basepath => {
   basepath = basepath || getProtoDir()
-  const files = await fsReaddir(basepath, { withFileTypes: true })
-  return files.filter(dirent => !dirent.isDirectory()).map(dirent => join(basepath, dirent.name))
+  const files = await fsReaddir(basepath)
+  return files.map(filename => join(basepath, filename))
 }
 
 /**
@@ -36,8 +36,8 @@ export const getProtoFiles = async basepath => {
  */
 export const getProtoVersions = async basepath => {
   basepath = basepath || getProtoDir()
-  const files = await fsReaddir(basepath, { withFileTypes: true })
-  return files.filter(dirent => !dirent.isDirectory()).map(dirent => basename(dirent.name, '.proto'))
+  const files = await fsReaddir(basepath)
+  return files.map(filename => basename(filename, '.proto'))
 }
 
 /**
