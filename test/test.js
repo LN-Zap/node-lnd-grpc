@@ -39,6 +39,8 @@ test('getLatestProtoFile', async t => {
 
 test('getClosestProtoVersion', async t => {
   const expectations = [
+    ['0.4.2', '0.5.0-beta commit=v0.5-beta-101-g61e867741926bcb318432a6344b80161fabd1455'],
+    ['0.5.1', '0.5.2-beta commit='], // Corrupt version string (from bad lnd build)
     ['0.5.1', '0.5.1-beta commit=v0.5.1-beta'],
     ['0.5.1', '0.5.1-beta commit=v0.5.1-beta-40-gfc4fe070100a66ea220a14e74f52f9c9d1550636'],
     ['0.5.1', '0.5.1-beta commit=v0.5.1-beta-215-3ed2241a94a3f8d7666678b69d4b4eebfe30c56c'],

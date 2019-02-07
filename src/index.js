@@ -9,7 +9,7 @@ const fsReaddir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
 const stat = promisify(fs.stat)
 
-export const GRPC_LOWEST_VERSION = '0.5.0'
+export const GRPC_LOWEST_VERSION = '0.4.2'
 export const GRPC_HIGHEST_VERSION = '0.5.2-rc3'
 
 /**
@@ -74,6 +74,11 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
   try {
     // Extract the semver.
     const fullversionsemver = semver.clean(commitString.replace('commit=', ''))
+
+    if (!fullversionsemver) {
+      throw new Error(`Could not get version from version string "${versionString}"`)
+    }
+
     // Strip out the commit hash.
     version = fullversionsemver
       .split('-')
@@ -112,7 +117,7 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
   })
 
   // If a build number is provided, find the closest matching build.
-  if (parse.build.length > 0) {
+  if (parse && parse.build.length > 0) {
     const matchVersions = versions.filter(v => v.startsWith(`${version}+`))
     debug('Searching for closest build version for %s+%s', version, parse.build)
     const builds = matchVersions.map(v => Number(v.split('+')[1]))
