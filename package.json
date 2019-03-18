@@ -26,7 +26,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LN-Zap/lnd-grpc.git"
+    "url": "git+https://github.com/LN-Zap/node-lnd-grpc.git"
   },
   "keywords": [
     "bitcoin",
@@ -36,9 +36,9 @@
   "author": "Tom Kirkpatrick <tkp@kirkdesigns.co.uk> (http://www.kirkdesigns.co.uk/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LN-Zap/lnd-grpc/issues"
+    "url": "https://github.com/LN-Zap/node-lnd-grpc/issues"
   },
-  "homepage": "https://github.com/LN-Zap/lnd-grpc",
+  "homepage": "https://github.com/LN-Zap/node-lnd-grpc",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-add-module-exports": "^1.0.0",

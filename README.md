@@ -68,7 +68,7 @@ Run the tests suite:
 
 ## Contribute
 
-Feel free to dive in! [Open an issue](https://github.com/LN-Zap/lnd-grpc/issues/new) or submit PRs.
+Feel free to dive in! [Open an issue](https://github.com/LN-Zap/node-lnd-grpc/issues/new) or submit PRs.
 
 lnd-grpc follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
