@@ -10,7 +10,7 @@ const readFile = promisify(fs.readFile)
 const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2'
-export const GRPC_HIGHEST_VERSION = '0.5.2-rc3'
+export const GRPC_HIGHEST_VERSION = '0.5.2'
 
 /**
  * Get the directory where rpc.proto files are stored.
@@ -72,8 +72,9 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
   let parse
 
   try {
-    // Extract the semver.
-    const fullversionsemver = semver.clean(commitString.replace('commit=', ''))
+    // Attempt to extract a semver from the commit strig.
+    const fullversionsemver = semver.clean(commitString.replace(/commit=.*v/, ''))
+    debug('Cleaned commit string as', fullversionsemver)
 
     if (!fullversionsemver) {
       throw new Error(`Could not get version from version string "${versionString}"`)
@@ -88,6 +89,8 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
     parse = semver.parse(version)
 
     const prerelease = parse.prerelease[0].split('-').filter(p => p !== 'beta')
+
+    debug('Determined prerelease as %s', prerelease)
 
     // If the prerelease is actually a build number (is just a numberic), parse it as such.
     if (/^\d+$/.test(prerelease[0])) {
@@ -111,7 +114,7 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
   const filteredVersions = versions.map(v => semver.parse(v).format())
 
   // Find the closest semver match.
-  debug('Searching for closest match for version %s in range: %O', version, filteredVersions)
+  debug('Searching for closest match for version %s in range: %O', version, versions)
   let match = semver.maxSatisfying(filteredVersions, `<= ${version}`, {
     includePrerelease: true,
   })

@@ -24,7 +24,7 @@ test('getProtoVersions', async t => {
 test('getLatestProtoVersion', async t => {
   t.plan(1)
   const res = await lnrpc.getLatestProtoVersion()
-  t.equal(res, '0.5.2-rc3', 'should return the latest known proto version')
+  t.equal(res, GRPC_HIGHEST_VERSION, 'should return the latest known proto version')
 })
 
 test('getLatestProtoFile', async t => {
@@ -51,9 +51,8 @@ test('getClosestProtoVersion', async t => {
     ['0.5.1+259', '0.5.1-beta commit=v0.5.1-beta-259-g237f2b6d4b5a04fece87ce8bb06290897b9c8d00 '],
     ['0.5.1+377', '0.5.1-beta commit=v0.5.1-beta-377-g5d0a371a7d23dac063dd1a3a1e52bbdaf66cbb2b'],
     ['0.5.2-rc3', '0.5.1-beta commit=v0.5.2-beta-rc3'],
-    ['0.5.2-rc3', '0.5.1-beta commit=v0.5.2-beta-rc4'], // This is more recent than the latest file we have.
-    ['0.5.2-rc3', '0.5.2-beta commit=v0.5.2-beta'], // This is more recent than the latest file we have.
-    ['0.5.2-rc3', '0.5.3-beta commit=v0.5.3-beta'], // This is more recent than the latest file we have.
+    ['0.5.2-rc4', '0.5.1-beta commit=v0.5.2-beta-rc5'], // This is more recent rc the latest we have.
+    ['0.5.2', '0.5.2-beta commit=basedon-v0.5.2-beta-2-dirty'], // This is a build based on a branch other than master.
   ]
 
   t.plan(expectations.length)
