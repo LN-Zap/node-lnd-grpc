@@ -72,12 +72,18 @@ export const getLatestProtoFile = async options => {
 export const getClosestProtoVersion = async (versionString, options) => {
   debug('Testing version string: %s', versionString)
   let [version, commitString] = versionString.split(' ')
-  const mainVersion = version
 
   debug('Parsed version string into version: %s, commitString: %s', version, commitString)
 
-  let parse
+  // If this looks like a pre-release, fetch the latest unstable proto file.
+  if (version.endsWith('99-beta')) {
+    debug('Identified build as prerelease (version ends in 99-beta)')
+    const latestMasterVersion = await getLatestProtoVersion({ includeUnstable: true })
+    debug('Selecting latest unstable rpc.proto as closest version match: %s', latestMasterVersion)
+    return latestMasterVersion
+  }
 
+  let parse
   try {
     // Attempt to extract a semver from the commit strig.
     const fullversionsemver = semver.clean(commitString.replace(/commit=.*v/, ''))
@@ -111,13 +117,6 @@ export const getClosestProtoVersion = async (versionString, options) => {
     version = parse.format()
   } catch (e) {
     console.warn('Unable to determine exact gRPC version: %s', e)
-  }
-
-  if (mainVersion.endsWith('99-beta')) {
-    debug('Identified build as build from master branch version ends in 99-beta')
-    const latestMasterVersion = await getLatestProtoVersion({ includeUnstable: true })
-    debug('Determined closest rpc.proto match as: %s', latestMasterVersion)
-    return latestMasterVersion
   }
 
   debug('Determined semver as %s', version)
