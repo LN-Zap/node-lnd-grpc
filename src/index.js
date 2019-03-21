@@ -78,7 +78,7 @@ export const getClosestProtoVersion = async (versionString, options = {}) => {
   // If this looks like a pre-release, fetch the latest unstable proto file.
   if (version.endsWith('99-beta')) {
     debug('Identified build as prerelease (version ends in 99-beta)')
-    const latestMasterVersion = await getLatestProtoVersion({ includeUnstable: true })
+    const latestMasterVersion = await getLatestProtoVersion(Object.assign(options, { includeUnstable: true }))
     debug('Selecting latest unstable rpc.proto as closest version match: %s', latestMasterVersion)
     return latestMasterVersion
   }
