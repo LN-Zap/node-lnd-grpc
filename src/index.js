@@ -46,7 +46,7 @@ export const getProtoVersions = async basepath => {
  * @return {Promise<String>} The latest rpc.proto version that we provide.
  */
 export const getLatestProtoVersion = async (options = {}) => {
-  const versions = await getProtoVersions(options.basepath)
+  const versions = await getProtoVersions(options.path)
   if (options.includeUnstable) {
     const unstableBuilds = versions.filter(v => v.includes('+'))
     return unstableBuilds[unstableBuilds.length - 1]
