@@ -3,7 +3,7 @@
 import path from 'path'
 import semver from 'semver'
 import test from 'tape-promise/tape'
-import lnrpc, { GRPC_HIGHEST_VERSION } from '../src'
+import lnrpc, { GRPC_HIGHEST_STABLE_VERSION, GRPC_HIGHEST_UNSATABLE_VERSION } from '../src'
 
 test('getProtoFiles', async t => {
   t.plan(3)
@@ -24,7 +24,13 @@ test('getProtoVersions', async t => {
 test('getLatestProtoVersion', async t => {
   t.plan(1)
   const res = await lnrpc.getLatestProtoVersion()
-  t.equal(res, GRPC_HIGHEST_VERSION, 'should return the latest known proto version')
+  t.equal(res, GRPC_HIGHEST_STABLE_VERSION, 'should return the latest known proto version')
+})
+
+test('getLatestProtoVersion (includeUnstable)', async t => {
+  t.plan(1)
+  const res = await lnrpc.getLatestProtoVersion({ includeUnstable: true })
+  t.equal(res, GRPC_HIGHEST_UNSATABLE_VERSION, 'should return the latest known proto version')
 })
 
 test('getLatestProtoFile', async t => {
@@ -32,7 +38,17 @@ test('getLatestProtoFile', async t => {
   const res = await lnrpc.getLatestProtoFile()
   t.equal(
     res,
-    path.join(__dirname, '..', 'proto', 'lnrpc', `${GRPC_HIGHEST_VERSION}.proto`),
+    path.join(__dirname, '..', 'proto', 'lnrpc', `${GRPC_HIGHEST_STABLE_VERSION}.proto`),
+    'should return the full path to the latest known proto version',
+  )
+})
+
+test('getLatestProtoFile (includeUnstable)', async t => {
+  t.plan(1)
+  const res = await lnrpc.getLatestProtoFile({ includeUnstable: true })
+  t.equal(
+    res,
+    path.join(__dirname, '..', 'proto', 'lnrpc', `${GRPC_HIGHEST_UNSATABLE_VERSION}.proto`),
     'should return the full path to the latest known proto version',
   )
 })
@@ -52,7 +68,9 @@ test('getClosestProtoVersion', async t => {
     ['0.5.1+377', '0.5.1-beta commit=v0.5.1-beta-377-g5d0a371a7d23dac063dd1a3a1e52bbdaf66cbb2b'],
     ['0.5.2-rc3', '0.5.1-beta commit=v0.5.2-beta-rc3'],
     ['0.5.2-rc4', '0.5.1-beta commit=v0.5.2-beta-rc5'], // This is more recent rc the latest we have.
-    ['0.5.2', '0.5.2-beta commit=basedon-v0.5.2-beta-2-dirty'], // This is a build based on a branch other than master.
+    [GRPC_HIGHEST_STABLE_VERSION, '0.5.2-beta commit=basedon-v0.5.2-beta-2-dirty'], // This is a build based on a branch other than master.
+    [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-76-gec62104accc08d22f967b03a31ca564055624886'], // This is build from a commit that exists on a branch other than master.
+    [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-109'], // Another random build, probably from master.
   ]
 
   t.plan(expectations.length)

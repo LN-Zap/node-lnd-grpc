@@ -29,23 +29,23 @@ npm install lnd-grpc --save
 
 Get the directory where rpc.proto files are stored.
 
-**async getProtoFiles():**
+**async getProtoFiles(basepath):**
 
 Get a list of all rpc.proto files that we provide.
 
-**async getProtoVersions():**
+**async getProtoVersions(basepath):**
 
 Get a list of all rpc.proto versions that we provide.
 
-**async getLatestProtoVersion():**
+**async getLatestProtoVersion(options):**
 
 Get the latest rpc.proto version that we provide.
 
-**async getLatestProtoFile():**
+**async getLatestProtoFile(options):**
 
 Get the path to the latest rpc.proto version that we provide.
 
-**async getClosestProtoVersion(version):**
+**async getClosestProtoVersion(version, options):**
 
 Find the closest matching rpc.proto version based on an lnd version string.
 

@@ -10,7 +10,8 @@ const readFile = promisify(fs.readFile)
 const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2'
-export const GRPC_HIGHEST_VERSION = '0.5.2'
+export const GRPC_HIGHEST_STABLE_VERSION = '0.5.2'
+export const GRPC_HIGHEST_UNSATABLE_VERSION = '0.5.1+891'
 
 /**
  * Get the directory where rpc.proto files are stored.
@@ -44,17 +45,22 @@ export const getProtoVersions = async basepath => {
  * Get the latest rpc.proto version that we provide.
  * @return {Promise<String>} The latest rpc.proto version that we provide.
  */
-export const getLatestProtoVersion = async basepath => {
-  const versions = await getProtoVersions(basepath)
-  return semver.maxSatisfying(versions, `> ${GRPC_LOWEST_VERSION}`, { includePrerelease: true })
+export const getLatestProtoVersion = async (options = {}) => {
+  const versions = await getProtoVersions(options.basepath)
+  if (options.includeUnstable) {
+    const unstableBuilds = versions.filter(v => v.includes('+'))
+    return unstableBuilds[unstableBuilds.length - 1]
+  }
+  const stableBuilds = versions.filter(v => !v.includes('+'))
+  return semver.maxSatisfying(stableBuilds, `> ${GRPC_LOWEST_VERSION}`, { includePrerelease: true })
 }
 
 /**
  * Get the path to the latest rpc.proto version that we provide.
  * @return {Promise<String>} Path to the latest rpc.proto version that we provide.
  */
-export const getLatestProtoFile = async basepath => {
-  const latestProtoVersion = await getLatestProtoVersion(basepath)
+export const getLatestProtoFile = async options => {
+  const latestProtoVersion = await getLatestProtoVersion(options)
   return join(getProtoDir(), `${latestProtoVersion}.proto`)
 }
 
@@ -63,9 +69,10 @@ export const getLatestProtoFile = async basepath => {
  * @param  {[type]}  info [description]
  * @return {Promise}      [description]
  */
-export const getClosestProtoVersion = async (versionString, basepath) => {
+export const getClosestProtoVersion = async (versionString, options) => {
   debug('Testing version string: %s', versionString)
   let [version, commitString] = versionString.split(' ')
+  const mainVersion = version
 
   debug('Parsed version string into version: %s, commitString: %s', version, commitString)
 
@@ -105,10 +112,18 @@ export const getClosestProtoVersion = async (versionString, basepath) => {
   } catch (e) {
     console.warn('Unable to determine exact gRPC version: %s', e)
   }
+
+  if (mainVersion.endsWith('99-beta')) {
+    debug('Identified build as build from master branch version ends in 99-beta')
+    const latestMasterVersion = await getLatestProtoVersion({ includeUnstable: true })
+    debug('Determined closest rpc.proto match as: %s', latestMasterVersion)
+    return latestMasterVersion
+  }
+
   debug('Determined semver as %s', version)
 
   // Get a list of all available proto files.
-  const versions = await getProtoVersions(basepath)
+  const versions = await getProtoVersions(options)
 
   // Strip out build metadata.
   const filteredVersions = versions.map(v => semver.parse(v).format())
