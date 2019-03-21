@@ -69,7 +69,7 @@ export const getLatestProtoFile = async options => {
  * @param  {[type]}  info [description]
  * @return {Promise}      [description]
  */
-export const getClosestProtoVersion = async (versionString, options) => {
+export const getClosestProtoVersion = async (versionString, options = {}) => {
   debug('Testing version string: %s', versionString)
   let [version, commitString] = versionString.split(' ')
 
@@ -122,7 +122,7 @@ export const getClosestProtoVersion = async (versionString, options) => {
   debug('Determined semver as %s', version)
 
   // Get a list of all available proto files.
-  const versions = await getProtoVersions(options)
+  const versions = await getProtoVersions(options.path)
 
   // Strip out build metadata.
   const filteredVersions = versions.map(v => semver.parse(v).format())
