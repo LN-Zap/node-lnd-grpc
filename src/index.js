@@ -11,7 +11,7 @@ const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2'
 export const GRPC_HIGHEST_STABLE_VERSION = '0.5.2'
-export const GRPC_HIGHEST_UNSATABLE_VERSION = '0.5.1+891'
+export const GRPC_HIGHEST_UNSATABLE_VERSION = '0.5.1+973'
 
 /**
  * Get the directory where rpc.proto files are stored.
