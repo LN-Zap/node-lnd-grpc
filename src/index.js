@@ -10,8 +10,8 @@ const readFile = promisify(fs.readFile)
 const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2'
-export const GRPC_HIGHEST_STABLE_VERSION = '0.5.2'
-export const GRPC_HIGHEST_UNSATABLE_VERSION = '0.5.1+907'
+export const GRPC_HIGHEST_STABLE_VERSION = '0.6.0-rc2'
+export const GRPC_HIGHEST_UNSATABLE_VERSION = '0.5.1+1074'
 
 /**
  * Get the directory where rpc.proto files are stored.
@@ -47,10 +47,18 @@ export const getProtoVersions = async basepath => {
  */
 export const getLatestProtoVersion = async (options = {}) => {
   const versions = await getProtoVersions(options.path)
+
   if (options.includeUnstable) {
-    const unstableBuilds = versions.filter(v => v.includes('+'))
+    const unstableBuilds = versions
+      .filter(v => v.includes('+'))
+      .sort((a, b) => {
+        const buildNumberA = a.split('+')[1]
+        const buildNumberB = b.split('+')[1]
+        return buildNumberA - buildNumberB
+      })
     return unstableBuilds[unstableBuilds.length - 1]
   }
+
   const stableBuilds = versions.filter(v => !v.includes('+'))
   return semver.maxSatisfying(stableBuilds, `> ${GRPC_LOWEST_VERSION}`, { includePrerelease: true })
 }
@@ -86,8 +94,20 @@ export const getClosestProtoVersion = async (versionString, options = {}) => {
   let parse
   try {
     // Attempt to extract a semver from the commit strig.
-    const fullversionsemver = semver.clean(commitString.replace(/commit=.*v/, ''))
-    debug('Cleaned commit string as', fullversionsemver)
+    const extractedVersionString = commitString.replace(/commit=.*v/, '')
+    debug('Extracted version from commit string: %s', extractedVersionString)
+
+    // Coerrce version from extracted semver (eg, converts incomplete semver v0.6-... to 0.6.0)
+    const coerced = semver.coerce(extractedVersionString)
+    const coercedVersion = coerced.version
+    debug('Coerced version as: %s', coercedVersion)
+
+    // Replace original version with coerced version.
+    const replaced = [coercedVersion, extractedVersionString.replace(/.*?\-/, '')].join('-')
+
+    // Clean to a valid full version string.
+    const fullversionsemver = semver.clean(replaced)
+    debug('Cleaned commit string: %s', fullversionsemver)
 
     if (!fullversionsemver) {
       throw new Error(`Could not get version from version string "${versionString}"`)
@@ -102,11 +122,11 @@ export const getClosestProtoVersion = async (versionString, options = {}) => {
     parse = semver.parse(version)
 
     const prerelease = parse.prerelease[0].split('-').filter(p => p !== 'beta')
-
     debug('Determined prerelease as %s', prerelease)
 
     // If the prerelease is actually a build number (is just a numberic), parse it as such.
     if (/^\d+$/.test(prerelease[0])) {
+      debug('Identified prerelease as build number')
       parse.prerelease = []
       parse.build = [Number(prerelease)]
     } else {

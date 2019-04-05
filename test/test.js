@@ -55,7 +55,7 @@ test('getLatestProtoFile (includeUnstable)', async t => {
 
 test('getClosestProtoVersion', async t => {
   const expectations = [
-    ['0.4.2', '0.5.0-beta commit=v0.5-beta-101-g61e867741926bcb318432a6344b80161fabd1455'],
+    ['0.5.0', '0.5.0-beta commit=v0.5-beta-101-g61e867741926bcb318432a6344b80161fabd1455'],
     ['0.5.1', '0.5.2-beta commit='], // Corrupt version string (from bad lnd build)
     ['0.5.1', '0.5.1-beta commit=v0.5.1-beta'],
     ['0.5.1', '0.5.1-beta commit=v0.5.1-beta-40-gfc4fe070100a66ea220a14e74f52f9c9d1550636'],
@@ -68,7 +68,12 @@ test('getClosestProtoVersion', async t => {
     ['0.5.1+377', '0.5.1-beta commit=v0.5.1-beta-377-g5d0a371a7d23dac063dd1a3a1e52bbdaf66cbb2b'],
     ['0.5.2-rc3', '0.5.1-beta commit=v0.5.2-beta-rc3'],
     ['0.5.2-rc4', '0.5.1-beta commit=v0.5.2-beta-rc5'], // This is more recent rc the latest we have.
-    [GRPC_HIGHEST_STABLE_VERSION, '0.5.2-beta commit=basedon-v0.5.2-beta-2-dirty'], // This is a build based on a branch other than master.
+    ['0.5.2', '0.5.2-beta commit=basedon-v0.5.2-beta-2-dirty'], // This is a build based on a branch other than master.
+    ['0.5.2', '0.5.2-beta commit=basedon-v0.5.2-beta-3-dirty'],
+    ['0.6.0-rc1', '0.5.1-beta commit=v0.6.0-beta-rc1'],
+    ['0.6.0-rc2', '0.5.1-beta commit=v0.6.0-beta-rc2'],
+    ['0.6.0-rc2', '0.5.1-beta commit=v0.6.0-beta-rc3'], // This is more recent rc the latest we have.
+    ['0.6.0-rc2', '0.6.0-beta commit=v0.6-beta-rc2-8-g7a718a40'], // master build after 0.6.0-rc2
     [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-76-gec62104accc08d22f967b03a31ca564055624886'], // This is build from a commit that exists on a branch other than master.
     [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-109'], // Another random build, probably from master.
   ]
