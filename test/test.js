@@ -72,8 +72,8 @@ test('getClosestProtoVersion', async t => {
     ['0.5.2', '0.5.2-beta commit=basedon-v0.5.2-beta-3-dirty'],
     ['0.6.0-rc1', '0.5.1-beta commit=v0.6.0-beta-rc1'],
     ['0.6.0-rc2', '0.5.1-beta commit=v0.6.0-beta-rc2'],
-    ['0.6.0-rc2', '0.5.1-beta commit=v0.6.0-beta-rc3'], // This is more recent rc the latest we have.
     ['0.6.0-rc2', '0.6.0-beta commit=v0.6-beta-rc2-8-g7a718a40'], // master build after 0.6.0-rc2
+    ['0.6.0-rc4', '0.6.0-beta commit=v0.6-beta-rc4-1-g7a718a40'], // master build after 0.6.0-rc4
     [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-76-gec62104accc08d22f967b03a31ca564055624886'], // This is build from a commit that exists on a branch other than master.
     [GRPC_HIGHEST_UNSATABLE_VERSION, '0.5.2-99-beta commit=queue/v1.0.1-109'], // Another random build, probably from master.
   ]
