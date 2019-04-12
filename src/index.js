@@ -51,10 +51,11 @@ export const getLatestProtoVersion = async (options = {}) => {
   if (options.includeUnstable) {
     const unstableBuilds = versions
       .filter(v => v.includes('+'))
+      // Sort by the version number or build number
       .sort((a, b) => {
-        const buildNumberA = a.split('+')[1]
-        const buildNumberB = b.split('+')[1]
-        return buildNumberA - buildNumberB
+        const [versionNumberA, buildNumberA] = a.split('+')
+        const [versionNumberB, buildNumberB] = b.split('+')
+        return semver.compare(versionNumberA, versionNumberB) || buildNumberA - buildNumberB
       })
     return unstableBuilds[unstableBuilds.length - 1]
   }
