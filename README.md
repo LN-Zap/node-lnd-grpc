@@ -5,9 +5,15 @@
 [![Dependency Status](https://david-dm.org/LN-Zap/lnd-grpc.svg?style=flat-square)](https://david-dm.org/LN-Zap/lnd-grpc)
 [![Build Status](https://travis-ci.org/LN-Zap/lnd-grpc.svg?branch=master)](https://travis-ci.org/LN-Zap/lnd-grpc)
 
-> Repository of lnd rpc protocol files and utilities for working with them ⚡️
+> Easy to use gRPC wrapper for lnd. ⚡️
 
-This package provides utilities for locating and selecting lnd rpc protocol files.
+This package provides and easy to use gRPC wrapper for lnd.
+
+- Supports all lnd versions
+- Supports all lnd gRPC sub services
+- Async/Promise support
+- Automatic lnd version detection
+- Robust state management
 
 ## Table of Contents
 
@@ -25,34 +31,7 @@ npm install lnd-grpc --save
 
 ## Usage
 
-**getProtoDir():**
-
-Get the directory where rpc.proto files are stored.
-
-**async getProtoFiles(basepath):**
-
-Get a list of all rpc.proto files that we provide.
-
-**async getProtoVersions(basepath):**
-
-Get a list of all rpc.proto versions that we provide.
-
-**async getLatestProtoVersion(options):**
-
-Get the latest rpc.proto version that we provide.
-
-**async getLatestProtoFile(options):**
-
-Get the path to the latest rpc.proto version that we provide.
-
-**async getClosestProtoVersion(version, options):**
-
-Find the closest matching rpc.proto version based on an lnd version string.
-
-```js
-const version = await getClosestProtoVersion('0.5.1-beta commit=v0.5.2-beta-rc3')
-expect(version).to.equal('0.5.2-beta.rc3')
-```
+[TODO WRITE...]
 
 ### Testing
 
