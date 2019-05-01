@@ -31,9 +31,7 @@ class LndGrpc extends EventEmitter {
       ],
       methods: {
         onBeforeActivateWalletUnlocker: this.onBeforeActivateWalletUnlocker.bind(this),
-        onAfterActivateWalletUnlocker: this.onAfterActivateWalletUnlocker.bind(this),
         onBeforeActivateLightning: this.onBeforeActivateLightning.bind(this),
-        onAfterActivateLightning: this.onAfterActivateLightning.bind(this),
         onBeforeDisconnect: this.onBeforeDisconnect.bind(this),
         onAfterDisconnect: this.onAfterDisconnect.bind(this),
       },
@@ -80,16 +78,23 @@ class LndGrpc extends EventEmitter {
     // Update our state accordingly.
     switch (walletState) {
       case WALLET_STATE_LOCKED:
-        await this.fsm.activateWalletUnlocker()
+        await this.activateWalletUnlocker()
         break
 
       case WALLET_STATE_ACTIVE:
-        await this.fsm.activateLightning()
+        await this.activateLightning()
         break
-
-      default:
-        throw new Error('Unable to determine wallet state')
     }
+  }
+
+  async activateWalletUnlocker(...args) {
+    await this.fsm.activateWalletUnlocker(args)
+    this.emit('service.WalletUnlocker.active')
+  }
+
+  async activateLightning(...args) {
+    await this.fsm.activateLightning(args)
+    this.emit('service.Lightning.active')
   }
 
   async disconnect(...args) {
@@ -118,14 +123,9 @@ class LndGrpc extends EventEmitter {
    * Connect to and activate the wallet unlocker api.
    */
   async onBeforeActivateWalletUnlocker() {
+    // Set up a listener that connects to the lightning interface as soon as the wallet has been unlocked.
+    this.services.WalletUnlocker.on('unlocked', () => this.activateLightning())
     await this.services.WalletUnlocker.connect()
-  }
-
-  /**
-   * Emit event after activating the wallet unlocker.
-   */
-  async onAfterActivateWalletUnlocker() {
-    this.emit('service.WalletUnlocker.active')
   }
 
   /**
@@ -158,13 +158,6 @@ class LndGrpc extends EventEmitter {
     )
   }
 
-  /**
-   * Emit event after activating the main api.
-   */
-  async onAfterActivateLightning() {
-    this.emit('services.Lightning.active')
-  }
-
   // ------------------------------------
   // Helpers
   // ------------------------------------
@@ -191,7 +184,7 @@ class LndGrpc extends EventEmitter {
     debug('Attempting to determine wallet state')
     try {
       await this.services.WalletUnlocker.connect()
-      await this.services.WalletUnlocker.unlockWallet('null')
+      await this.services.WalletUnlocker.unlockWallet('-null-')
     } catch (error) {
       switch (error.code) {
         /*
@@ -216,6 +209,7 @@ class LndGrpc extends EventEmitter {
           Disconnect all services.
         */
         default:
+          console.error(error)
           debug('Unable to determine wallet state', error)
           throw error
       }

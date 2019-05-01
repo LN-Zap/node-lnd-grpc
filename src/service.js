@@ -80,6 +80,7 @@ class Service extends EventEmitter {
 
     await this.establishConnection({
       useMacaroon: this.useMacaroon,
+      waitForCert: this.options.waitForCert,
       waitForMacaroon: this.options.waitForMacaroon,
     })
   }
@@ -116,7 +117,7 @@ class Service extends EventEmitter {
    * Establish a connection to the Lightning interface.
    */
   async establishConnection(options = {}) {
-    const { version, useMacaroon, waitForMacaroon } = options
+    const { version, useMacaroon, waitForMacaroon, waitForCert } = options
     const { host, cert, macaroon } = this.options
 
     // Find the most recent proto file for this service.
@@ -130,12 +131,17 @@ class Service extends EventEmitter {
     const packageDefinition = await load(filepath, grpcOptions)
     const rpc = loadPackageDefinition(packageDefinition)
 
+    // Wait for the cert to exist (this can take some time immediately after starting lnd).
+    if (waitForCert) {
+      await waitForFile(cert, 20000)
+    }
+
     // Create ssl credentials to use with the gRPC client.
     let creds = await createSslCreds(cert)
 
     // Add macaroon to crenentials if service requires macaroons.
-    if (useMacaroon) {
-      // If we are trying to connect to the internal lnd, wait up to 20 seconds for the macaroon to be generated.
+    if (useMacaroon && macaroon) {
+      // Wait for the macaroon to exist (this can take some time immediately after Initializing a wallet).
       if (waitForMacaroon) {
         await waitForFile(macaroon, 20000)
       }
@@ -144,13 +150,12 @@ class Service extends EventEmitter {
     }
 
     try {
-      const rpcService = rpc[protoPackage][this.serviceName]
-
       // Create a new gRPC client instance.
+      const rpcService = rpc[protoPackage][this.serviceName]
       this.service = new rpcService(host, creds)
 
       // Wait up to 10 seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(10))
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(30))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)
@@ -172,8 +177,11 @@ class Service extends EventEmitter {
   wrapAsync(service) {
     Object.values(service).forEach(method => {
       const { originalName } = method
-      this[originalName] = payload => {
-        return promisifiedCall(this.service, this.service[originalName], payload)
+      if (!this[originalName]) {
+        this[originalName] = (payload = {}) => {
+          this.debug(`Calling ${this.serviceName}.${originalName} with payload: %o`, payload)
+          return promisifiedCall(this.service, this.service[originalName], payload)
+        }
       }
     })
   }

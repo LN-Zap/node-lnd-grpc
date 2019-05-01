@@ -20,6 +20,7 @@ class Lightning extends Service {
     // Establish a connection, as normal.
     await this.establishConnection({
       useMacaroon: this.useMacaroon,
+      waitForCert: this.options.waitForCert,
       waitForMacaroon: this.options.waitForMacaroon,
     })
 

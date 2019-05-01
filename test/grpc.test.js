@@ -1,10 +1,11 @@
+import { spawn } from 'child_process'
 import test from 'tape-promise/tape'
 import sinon from 'sinon'
 import { join } from 'path'
 import LndGrpc from '../src'
 
 const host = 'testnet3'
-const options = {
+const grpcOptions = {
   host: `${host}-lnd.zaphq.io:10009`,
   cert: join(__dirname, `fixtures/${host}`, 'tls.cert'),
   macaroon: join(__dirname, `fixtures/${host}`, 'readonly.macaroon'),
@@ -12,12 +13,12 @@ const options = {
 
 test('initialize', t => {
   t.plan(14)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   t.equal(grpc.state, 'ready', 'should start in the ready state')
   t.equal(grpc.can('activateWalletUnlocker'), true, 'can activateWalletUnlocker')
   t.equal(grpc.can('activateLightning'), true, 'can activateLightning')
   t.equal(grpc.can('disconnect'), false, 'can not disconnect')
-  t.equal(grpc.options, options, 'should store constructor options on the options property')
+  t.equal(grpc.options, grpcOptions, 'should store constructor options on the options property')
   t.true(grpc.services, 'should have a servives property')
   t.true(grpc.services.WalletUnlocker, `should have WalletUnlocker service`)
   t.true(grpc.services.Lightning, `should have Lightning service`)
@@ -27,13 +28,11 @@ test('initialize', t => {
   t.true(grpc.services.Router, `should have Router service`)
   t.true(grpc.services.Signer, `should have Signer service`)
   t.true(grpc.services.WalletKit, `should have WalletKit service`)
-
-  console.log(grpc)
 })
 
 test('ready -> connect (locked)', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   const stub = sinon.stub(grpc.fsm, 'activateWalletUnlocker')
   await grpc.connect()
@@ -42,7 +41,7 @@ test('ready -> connect (locked)', async t => {
 
 test('ready -> connect (active)', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   const stub = sinon.stub(grpc.fsm, 'activateLightning')
   await grpc.connect()
@@ -51,7 +50,7 @@ test('ready -> connect (active)', async t => {
 
 test('locked -> connect', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   await grpc.connect()
   try {
@@ -63,7 +62,7 @@ test('locked -> connect', async t => {
 
 test('active -> connect', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   await grpc.connect()
   try {
@@ -75,7 +74,7 @@ test('active -> connect', async t => {
 
 test('locked -> disconnect', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   await grpc.connect()
   await grpc.disconnect()
@@ -84,7 +83,7 @@ test('locked -> disconnect', async t => {
 
 test('active -> disconnect', async t => {
   t.plan(1)
-  const grpc = new LndGrpc(options)
+  const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   await grpc.connect()
   await grpc.disconnect()
@@ -94,7 +93,7 @@ test('active -> disconnect', async t => {
 test('ready -> disconnect', async t => {
   t.plan(1)
   try {
-    const grpc = new LndGrpc(options)
+    const grpc = new LndGrpc(grpcOptions)
     await grpc.disconnect()
   } catch (e) {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from ready state')
