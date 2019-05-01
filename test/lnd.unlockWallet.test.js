@@ -1,11 +1,6 @@
-import { spawn } from 'child_process'
 import test from 'tape-promise/tape'
-import sinon from 'sinon'
-import { join } from 'path'
-import rimraf from 'rimraf'
 import LndGrpc from '../src'
 import { spawnLnd, killLnd, grpcOptions, seed } from './helpers/lnd'
-import { waitForFile } from '../src/utils'
 
 let lndProcess
 let grpc

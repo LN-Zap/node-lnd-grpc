@@ -16,6 +16,9 @@ import {
 } from './utils'
 import registry from './registry'
 
+// Time (in seconds) to wait for a connection to be established.
+const CONNECT_WAIT_TIMEOUT = 10
+
 /**
  * Base class for lnd gRPC services.
  * @extends EventEmitter
@@ -139,7 +142,7 @@ class Service extends EventEmitter {
     // Create ssl credentials to use with the gRPC client.
     let creds = await createSslCreds(cert)
 
-    // Add macaroon to crenentials if service requires macaroons.
+    // Add macaroon to credentials if service requires macaroons.
     if (useMacaroon && macaroon) {
       // Wait for the macaroon to exist (this can take some time immediately after Initializing a wallet).
       if (waitForMacaroon) {
@@ -154,8 +157,8 @@ class Service extends EventEmitter {
       const rpcService = rpc[protoPackage][this.serviceName]
       this.service = new rpcService(host, creds)
 
-      // Wait up to 10 seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(30))
+      // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)
@@ -171,8 +174,7 @@ class Service extends EventEmitter {
   /**
    * Add promisified helper methods for each method in the gRPC service.
    * Inspiration from https://github.com/altangent/lnd-async
-   * @param  {Object} rpc [description]
-   * @return {[type]}     [description]
+   * @param {Object} service service description used to extract apply method details
    */
   wrapAsync(service) {
     Object.values(service).forEach(method => {

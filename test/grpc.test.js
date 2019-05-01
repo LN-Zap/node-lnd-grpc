@@ -19,7 +19,7 @@ test('initialize', t => {
   t.equal(grpc.can('activateLightning'), true, 'can activateLightning')
   t.equal(grpc.can('disconnect'), false, 'can not disconnect')
   t.equal(grpc.options, grpcOptions, 'should store constructor options on the options property')
-  t.true(grpc.services, 'should have a servives property')
+  t.true(grpc.services, 'should have a services property')
   t.true(grpc.services.WalletUnlocker, `should have WalletUnlocker service`)
   t.true(grpc.services.Lightning, `should have Lightning service`)
   t.true(grpc.services.Autopilot, `should have Autopilot service`)

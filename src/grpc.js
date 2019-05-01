@@ -124,7 +124,7 @@ class LndGrpc extends EventEmitter {
    */
   async onBeforeActivateWalletUnlocker() {
     // Set up a listener that connects to the lightning interface as soon as the wallet has been unlocked.
-    this.services.WalletUnlocker.on('unlocked', () => this.activateLightning())
+    this.services.WalletUnlocker.on('unlocked', this.activateLightning.bind(this))
     await this.services.WalletUnlocker.connect()
   }
 
@@ -140,7 +140,7 @@ class LndGrpc extends EventEmitter {
     // Fetch the determined version.
     const { version } = Lightning
 
-    // Get a list of all other available and supported servicves.
+    // Get a list of all other available and supported services.
     const availableServices = registry[version].services
       .map(s => s.name)
       .filter(s => Object.keys(this.services).includes(s))
@@ -148,13 +148,13 @@ class LndGrpc extends EventEmitter {
 
     // Connect to the other services.
     await Promise.all(
-      availableServices.map(serviceName => {
-        const service = this.services[serviceName]
-        service.version = version
-        if (service.can('connect')) {
+      availableServices
+        .filter(serviceName => this.services[serviceName].can('connect'))
+        .map(serviceName => {
+          const service = this.services[serviceName]
+          service.version = version
           return service.connect()
-        }
-      }),
+        }),
     )
   }
 
@@ -232,7 +232,7 @@ class LndGrpc extends EventEmitter {
     /**
      * Promise that resolves when service is active.
      */
-    const isActive = new Promise(async resolve => {
+    const isActive = new Promise(resolve => {
       // If the service is already active, return immediately.
       if (this.services[serviceName].is('connected')) {
         return resolve()
