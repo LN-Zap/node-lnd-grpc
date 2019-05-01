@@ -179,11 +179,21 @@ class Service extends EventEmitter {
   wrapAsync(service) {
     Object.values(service).forEach(method => {
       const { originalName } = method
-      if (!this[originalName]) {
+      // Do not override existing methods.
+      if (this[originalName]) {
+        return
+      }
+      // If this method is a stream, bind it to the service instance as is.
+      if (method.requestStream || method.responseStream) {
         this[originalName] = (payload = {}) => {
           this.debug(`Calling ${this.serviceName}.${originalName} with payload: %o`, payload)
-          return promisifiedCall(this.service, this.service[originalName], payload)
+          return this.service[originalName].bind(this.service).call()
         }
+      }
+      // Otherwise, promisify and bind to the service instance.
+      this[originalName] = (payload = {}) => {
+        this.debug(`Calling ${this.serviceName}.${originalName} with payload: %o`, payload)
+        return promisifiedCall(this.service, this.service[originalName], payload)
       }
     })
   }
