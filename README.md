@@ -168,10 +168,16 @@ if (grpc.state === 'locked') {
   })
 }
 
-// Make some api calls.
-const { Lightning } = grpc.services
-const info = await Lightning.getInfo()
+// Make some api calls...
+const { Lightning, Autopilot, Invoices } = grpc.services
+// Fetch current balance.
 const balance = await Lightning.walletBalance()
+// Enable autopilot.
+const modifyStatusRes = await Autopilot.modifyStatus({ enable: true })
+// Cancel an invoice.
+const cancelInvoiceRes = await Invoices.cancelInvoice({
+  payment_hash: '3bba3a6cdbd601dbf096784115f45d314c0f51ffb69ae6d338e229cb825afbe1',
+})
 
 // Disconnect from all services.
 await grpc.disconnect()
