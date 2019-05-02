@@ -16,8 +16,11 @@ import {
 } from './utils'
 import registry from './registry'
 
-// Time (in seconds) to wait for a connection to be established.
-const CONNECT_WAIT_TIMEOUT = 10
+// Time (in ms) to wait for a connection to be established.
+const CONNECT_WAIT_TIMEOUT = 10000
+
+// Time (in ms) to wait for a cert/macaroon file to become present.
+const FILE_WAIT_TIMEOUT = 10000
 
 /**
  * Base class for lnd gRPC services.
@@ -80,12 +83,7 @@ class Service extends EventEmitter {
    */
   async onBeforeConnect() {
     this.debug(`Connecting to ${this.serviceName} gRPC service`)
-
-    await this.establishConnection({
-      useMacaroon: this.useMacaroon,
-      waitForCert: this.options.waitForCert,
-      waitForMacaroon: this.options.waitForMacaroon,
-    })
+    await this.establishConnection()
   }
 
   /**
@@ -120,33 +118,44 @@ class Service extends EventEmitter {
    * Establish a connection to the Lightning interface.
    */
   async establishConnection(options = {}) {
-    const { version, useMacaroon, waitForMacaroon, waitForCert } = options
-    const { host, cert, macaroon, protoDir } = this.options
+    const { version } = options
+    const {
+      host,
+      cert,
+      macaroon,
+      protoDir,
+      waitForCert,
+      waitForMacaroon,
+      grpcOptions: customGrpcOptions = {},
+    } = this.options
 
     // Find the most recent proto file for this service.
     this.version = version || this.version || getLatestProtoVersion()
+
     const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
     const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
     const filepath = join(protoDir || getProtoDir(), this.version, protoPackage, protoFile)
     this.debug(`Establishing gRPC connection to ${this.serviceName} with proto file %s`, filepath)
 
     // Load gRPC package definition as a gRPC object hierarchy.
-    const packageDefinition = await load(filepath, grpcOptions)
+    const packageDefinition = await load(filepath, { ...grpcOptions, ...customGrpcOptions })
     const rpc = loadPackageDefinition(packageDefinition)
 
     // Wait for the cert to exist (this can take some time immediately after starting lnd).
     if (waitForCert) {
-      await waitForFile(cert, 20000)
+      const waitTime = Number.isFinite(waitForCert) ? waitForCert : FILE_WAIT_TIMEOUT
+      await waitForFile(cert, waitTime)
     }
 
     // Create ssl credentials to use with the gRPC client.
     let creds = await createSslCreds(cert)
 
     // Add macaroon to credentials if service requires macaroons.
-    if (useMacaroon && macaroon) {
+    if (this.useMacaroon && macaroon) {
       // Wait for the macaroon to exist (this can take some time immediately after Initializing a wallet).
       if (waitForMacaroon) {
-        await waitForFile(macaroon, 20000)
+        const waitTime = Number.isFinite(waitForMacaroon) ? waitForMacaroon : FILE_WAIT_TIMEOUT
+        await waitForFile(macaroon, waitTime)
       }
       const macaroonCreds = await createMacaroonCreds(macaroon)
       creds = credentials.combineChannelCredentials(creds, macaroonCreds)
@@ -158,7 +167,7 @@ class Service extends EventEmitter {
       this.service = new rpcService(host, creds)
 
       // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT / 1000))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)

@@ -18,11 +18,7 @@ class Lightning extends Service {
     this.debug(`Connecting to ${this.serviceName} gRPC service`)
 
     // Establish a connection, as normal.
-    await this.establishConnection({
-      useMacaroon: this.useMacaroon,
-      waitForCert: this.options.waitForCert,
-      waitForMacaroon: this.options.waitForMacaroon,
-    })
+    await this.establishConnection()
 
     // Once connected, make a call to getInfo in order to determine the api version.
     const info = await this.getInfo()
@@ -38,11 +34,7 @@ class Lightning extends Service {
     if (closestProtoVersion !== latestProtoVersion) {
       this.debug('Found better match. Reconnecting using rpc.proto version: %s', closestProtoVersion)
       this.service.close()
-      await this.establishConnection({
-        version: closestProtoVersion,
-        useMacaroon: this.useMacaroon,
-        waitForMacaroon: this.options.waitForMacaroon,
-      })
+      await this.establishConnection({ version: closestProtoVersion })
     }
   }
 }
