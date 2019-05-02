@@ -121,13 +121,13 @@ class Service extends EventEmitter {
    */
   async establishConnection(options = {}) {
     const { version, useMacaroon, waitForMacaroon, waitForCert } = options
-    const { host, cert, macaroon } = this.options
+    const { host, cert, macaroon, protoDir } = this.options
 
     // Find the most recent proto file for this service.
     this.version = version || this.version || getLatestProtoVersion()
     const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
     const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
-    const filepath = join(getProtoDir(), this.version, protoPackage, protoFile)
+    const filepath = join(protoDir || getProtoDir(), this.version, protoPackage, protoFile)
     this.debug(`Establishing gRPC connection to ${this.serviceName} with proto file %s`, filepath)
 
     // Load gRPC package definition as a gRPC object hierarchy.
