@@ -9,7 +9,9 @@
     [
       "@babel/preset-env",
       {
-        "include": ["transform-classes", "transform-destructuring"]
+        "include": ["transform-classes", "transform-destructuring"],
+        "targets": { "node": "current" },
+        "useBuiltIns": "usage"
       }
     ]
   ],
