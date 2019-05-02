@@ -17,7 +17,7 @@ test('genSeed:test', async t => {
     await grpc.connect()
     const res = await grpc.services.WalletUnlocker.genSeed()
     t.equal(grpc.state, 'locked', 'should be in locked state')
-    t.equal(res.cipherSeedMnemonic.length, 24, 'should return 24 word seed')
+    t.equal(res.cipher_seed_mnemonic.length, 24, 'should return 24 word seed')
   } catch (e) {
     console.error(e)
     t.fail(e)

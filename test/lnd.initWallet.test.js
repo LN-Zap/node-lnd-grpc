@@ -16,8 +16,8 @@ test('initWallet:test', async t => {
     grpc = new LndGrpc(grpcOptions)
     await grpc.connect()
     grpc.services.WalletUnlocker.initWallet({
-      walletPassword: Buffer.from('password'),
-      cipherSeedMnemonic: seed,
+      wallet_password: Buffer.from('password'),
+      cipher_seed_mnemonic: seed,
     })
     grpc.once('service.Lightning.active', async () => {
       t.equal(grpc.state, 'active', 'should emit "service.Lightning.active" event and be in active state')
