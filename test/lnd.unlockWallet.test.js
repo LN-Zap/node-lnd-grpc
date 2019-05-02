@@ -19,7 +19,7 @@ test('unlockWallet:test', async t => {
       wallet_password: Buffer.from('password'),
       cipher_seed_mnemonic: seed,
     })
-    grpc.once('service.Lightning.active', async () => {
+    grpc.once('active', async () => {
       try {
         await grpc.disconnect()
         await killLnd(lndProcess)
@@ -29,8 +29,8 @@ test('unlockWallet:test', async t => {
         grpc.services.WalletUnlocker.unlockWallet({
           wallet_password: Buffer.from('password'),
         })
-        grpc.once('service.Lightning.active', async () => {
-          t.equal(grpc.state, 'active', 'should emit "service.Lightning.active" event and be in active state')
+        grpc.once('active', async () => {
+          t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
         })
       } catch (e) {
         console.error(e)

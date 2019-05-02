@@ -89,12 +89,12 @@ class LndGrpc extends EventEmitter {
 
   async activateWalletUnlocker(...args) {
     await this.fsm.activateWalletUnlocker(args)
-    this.emit('service.WalletUnlocker.active')
+    this.emit('locked')
   }
 
   async activateLightning(...args) {
     await this.fsm.activateLightning(args)
-    this.emit('service.Lightning.active')
+    this.emit('active')
   }
 
   async disconnect(...args) {

@@ -152,10 +152,10 @@ const grpc = new LndGrpc({
 await grpc.connect()
 
 // Do something cool if we detect that the wallet is locked.
-grpc.on(`service.WalletUnlocker.active`, () => console.log('wallet locked!'))
+grpc.on(`locked`, () => console.log('wallet locked!'))
 
 // Do something cool when the wallet gets unlocked.
-grpc.on(`service.Lightning.active`, () => console.log('wallet unlocked!'))
+grpc.on(`active`, () => console.log('wallet unlocked!'))
 
 // Do something cool when the connection gets disconnected.
 grpc.on(`disconnected`, () => console.log('disconnected from lnd!'))
@@ -179,13 +179,13 @@ await grpc.disconnect()
 
 ### Events
 
-**Event: 'service.WalletUnlocker.active'**
+**Event: 'locked'**
 
-The `service.WalletUnlocker.active` event is emitted when it has been determined that the wallet is locked and the `WalletUnlocker` interface is active.
+The `locked` event is emitted when it has been determined that the wallet is locked and the `WalletUnlocker` interface is active.
 
-**Event: 'service.Lightning.active'**
+**Event: 'active'**
 
-The `service.Lightning.active` event is emitted when it has been determined that the wallet is unlocked and the `Lightning` interface is active.
+The `active` event is emitted when it has been determined that the wallet is unlocked and the `Lightning` interface is active.
 
 **Event: 'disconnected'**
 
