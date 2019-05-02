@@ -98,7 +98,8 @@ class LndGrpc extends EventEmitter {
   }
 
   async disconnect(...args) {
-    return this.fsm.disconnect(args)
+    await this.fsm.disconnect(args)
+    this.emit('disconnected')
   }
 
   // ------------------------------------
