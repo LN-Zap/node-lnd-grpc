@@ -43,7 +43,6 @@
     "@babel/plugin-proposal-export-default-from": "7.2.0",
     "@babel/plugin-proposal-object-rest-spread": "7.4.4",
     "@babel/preset-env": "7.4.4",
-    "babel-cli": "6.26.0",
     "babel-eslint": "^10.0.1",
     "babel-plugin-source-map-support": "2.0.1",
     "babel-tape-runner": "3.0.0",
@@ -62,6 +61,7 @@
     "tape-promise": "4.0.0"
   },
   "dependencies": {
+    "@babel/cli": "^7.4.4",
     "@grpc/grpc-js": "0.3.6",
     "@grpc/proto-loader": "0.5.0",
     "debug": "4.1.1",
