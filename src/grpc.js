@@ -222,38 +222,37 @@ class LndGrpc extends EventEmitter {
   }
 
   /**
-   * Wait for a service to become active.
-   * @param  {String} serviceName Name of service to wait for (Lightning, or WalletUnlocker)
-   * @return {Promise<Object>}     Object with `isActive` and `cancel` properties.
+   * Wait for lnd to enter a particular state.
+   * @param  {string} state Name of state to wait for (locked, active, disconnected)
+   * @return {Promise<Object>} Object with `isDone` and `cancel` properties.
    */
-  waitForService(serviceName) {
+  waitForState(stateName) {
     let successHandler
-    const activationEventName = `services.${serviceName}.active`
 
     /**
      * Promise that resolves when service is active.
      */
-    const isActive = new Promise(resolve => {
-      // If the service is already active, return immediately.
-      if (this.services[serviceName].is('connected')) {
+    const isDone = new Promise(resolve => {
+      // If the service is already in the requested state, return immediately.
+      if (this.fsm.state === stateName) {
         return resolve()
       }
-      // Otherwise, wait until we receive an activation event from the gRPC service.
+      // Otherwise, wait until we receive a relevant state change event.
       successHandler = () => resolve()
-      this.prependOnceListener(activationEventName, successHandler)
+      this.prependOnceListener(stateName, successHandler)
     })
 
     /**
-     * Method to abort the wait (prevent the isActive from resolving and remove activation event listener).
+     * Method to abort the wait (prevent the isDone from resolving and remove activation event listener).
      */
     const cancel = () => {
       if (successHandler) {
-        this.off(activationEventName, successHandler)
+        this.off(stateName, successHandler)
         successHandler = null
       }
     }
 
-    return { isActive, cancel }
+    return { isDone, cancel }
   }
 }
 
