@@ -71,3 +71,6 @@ typings/
 
 # Transpiled code
 /dist
+
+# Test data
+test/data
