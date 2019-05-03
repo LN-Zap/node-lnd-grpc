@@ -1,6 +1,7 @@
 import EventEmitter from 'events'
 import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
+import lndconnect from 'lndconnect'
 import { status } from '@grpc/grpc-js'
 import { validateHost } from './utils'
 import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
@@ -20,6 +21,12 @@ class LndGrpc extends EventEmitter {
     super()
     debug(`Initializing LndGrpc with config: %o`, options)
     this.options = options
+
+    // If an lndconnect uri was provided, extract the connection details from that.
+    if (options.lndconnectUri) {
+      const connectionInfo = lndconnect.parse(options.lndconnectUri)
+      Object.assign(this.options, connectionInfo)
+    }
 
     // Define state machine.
     this.fsm = new StateMachine({

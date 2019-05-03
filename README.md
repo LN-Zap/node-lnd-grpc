@@ -11,9 +11,9 @@ This package provides and easy to use gRPC wrapper for lnd.
 
 - Supports all lnd versions
 - Supports all lnd gRPC sub services
-- Async/Promise support
+- Automatic async/promise support
 - Automatic lnd version detection
-- lndconnect support
+- [lndconnect](https://github.com/LN-Zap/node-lndconnect) support
 
 ## Table of Contents
 
@@ -51,14 +51,17 @@ const grpc = new LndGrpc(options)
 
 The constructor accepts the following options:
 
-- **host {string}:**  
-  Hostname and port of lnd gRPC.
+- **lndconnectUri {[string]}:**  
+  An [lndconnect uri](https://github.com/LN-Zap/node-lndconnect) that encodes the lnd connection details (host, cert, and macaroon). If `lndconnectUri` is set it will override the `host`, `cert`, and `macaroon` properties (below)
+
+- **host {[string]}:**  
+  Hostname and port of lnd gRPC. (extracted from `lndconnectUri` if provided)
 
 - **cert {[string]}:**  
-  TLS certificate of the lnd node. This can be a path to the TLS cert or PEM ended cert data.
+  TLS certificate of the lnd node. This can be a path to the TLS cert or PEM ended cert data. (extracted from `lndconnectUri` if provided)
 
 - **macaroon {[string]}:**  
-  Macaroon for the lnd node. This can be a path to the macaroon file or hex encoded macaroon data.
+  Macaroon for the lnd node. This can be a path to the macaroon file or hex encoded macaroon data. (extracted from `lndconnectUri` if provided)
 
 - **waitForCert {[boolean|number]}:**  
   Time (ms) to wait for TLS certificate before aborting connection attempt.

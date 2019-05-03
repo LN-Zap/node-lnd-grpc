@@ -4,12 +4,13 @@ import sinon from 'sinon'
 import { join } from 'path'
 import LndGrpc from '../src'
 
-const host = 'testnet3'
-const grpcOptions = {
-  host: `${host}-lnd.zaphq.io:10009`,
-  cert: join(__dirname, `fixtures/${host}`, 'tls.cert'),
-  macaroon: join(__dirname, `fixtures/${host}`, 'readonly.macaroon'),
-}
+const hostname = 'testnet3'
+
+const host = `${hostname}-lnd.zaphq.io:10009`
+const cert = join(__dirname, `fixtures/${hostname}`, 'tls.cert')
+const macaroon = join(__dirname, `fixtures/${hostname}`, 'readonly.macaroon')
+
+const grpcOptions = { host, cert, macaroon }
 
 test('initialize', t => {
   t.plan(14)
@@ -28,6 +29,15 @@ test('initialize', t => {
   t.true(grpc.services.Router, `should have Router service`)
   t.true(grpc.services.Signer, `should have Signer service`)
   t.true(grpc.services.WalletKit, `should have WalletKit service`)
+})
+
+test('lndconnect', t => {
+  t.plan(3)
+  const lndconnectUri = `lndconnect://${host}?cert=${cert}&macaroon=${macaroon}`
+  const grpc = new LndGrpc({ lndconnectUri })
+  t.equal(grpc.options.host, host, 'should extract the host')
+  t.equal(grpc.options.cert, cert, 'should extract the cert')
+  t.equal(grpc.options.macaroon, macaroon, 'should extract the macaroon')
 })
 
 test('ready -> connect (locked)', async t => {
