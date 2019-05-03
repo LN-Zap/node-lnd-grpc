@@ -11,7 +11,8 @@
       {
         "include": ["transform-classes", "transform-destructuring"],
         "targets": { "node": "current" },
-        "useBuiltIns": "usage"
+        "useBuiltIns": "usage",
+        "corejs": "core-js@2"
       }
     ]
   ],
