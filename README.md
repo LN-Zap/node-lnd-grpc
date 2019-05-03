@@ -2,8 +2,8 @@
 
 [![](https://img.shields.io/badge/project-LND-blue.svg?style=flat-square)](https://github.com/lightningnetwork/lnd)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Dependency Status](https://david-dm.org/LN-Zap/lnd-grpc.svg?style=flat-square)](https://david-dm.org/LN-Zap/lnd-grpc)
-[![Build Status](https://travis-ci.org/LN-Zap/lnd-grpc.svg?branch=master)](https://travis-ci.org/LN-Zap/lnd-grpc)
+[![Dependency Status](https://david-dm.org/LN-Zap/node-lnd-grpc.svg?style=flat-square)](https://david-dm.org/LN-Zap/node-lnd-grpc)
+[![Build Status](https://travis-ci.org/LN-Zap/node-lnd-grpc.svg?branch=master)](https://travis-ci.org/LN-Zap/node-lnd-grpc)
 
 > Easy to use gRPC wrapper for lnd. ⚡️
 
