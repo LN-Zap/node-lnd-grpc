@@ -47,7 +47,6 @@
     "babel-eslint": "10.0.1",
     "babel-plugin-source-map-support": "2.0.1",
     "babel-tape-runner": "3.0.0",
-    "core-js": "2.6.5",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.2.0",
     "lnd-binary": "0.3.10",
@@ -56,7 +55,6 @@
     "prettier-eslint-cli": "4.7.1",
     "rimraf": "2.6.3",
     "sinon": "7.3.2",
-    "source-map-support": "0.5.12",
     "split2": "3.1.1",
     "tap-spec": "5.0.0",
     "tape": "4.10.1",
@@ -65,10 +63,12 @@
   "dependencies": {
     "@grpc/grpc-js": "0.3.6",
     "@grpc/proto-loader": "0.5.0",
+    "core-js": "2.6.5",
     "debug": "4.1.1",
     "javascript-state-machine": "3.1.0",
     "lndconnect": "0.2.5",
     "semver": "6.0.0",
+    "source-map-support": "0.5.12",
     "untildify": "4.0.0",
     "validator": "10.11.0"
   }
