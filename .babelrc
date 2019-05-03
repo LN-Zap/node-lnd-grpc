@@ -12,12 +12,13 @@
         "include": ["transform-classes", "transform-destructuring"],
         "targets": { "node": "current" },
         "useBuiltIns": "usage",
-        "corejs": "core-js@2"
+        "corejs": "core-js@3"
       }
     ]
   ],
   "plugins": [
     "@babel/plugin-proposal-export-default-from",
-    "@babel/plugin-proposal-object-rest-spread"
+    "@babel/plugin-proposal-object-rest-spread",
+    "add-module-exports"
   ]
 }
