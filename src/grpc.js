@@ -3,7 +3,7 @@ import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import lndconnect from 'lndconnect'
 import { status } from '@grpc/grpc-js'
-import { validateHost } from './utils'
+import { grpcSslCipherSuites, validateHost } from './utils'
 import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
 import registry from './registry'
 
@@ -11,6 +11,11 @@ const debug = createDebug('lnrpc:grpc')
 
 const WALLET_STATE_LOCKED = 'WALLET_STATE_LOCKED'
 const WALLET_STATE_ACTIVE = 'WALLET_STATE_ACTIVE'
+
+// Set up SSL with the cypher suits that we need.
+if (!process.env.GRPC_SSL_CIPHER_SUITES) {
+  process.env.GRPC_SSL_CIPHER_SUITES = grpcSslCipherSuites
+}
 
 /**
  * Lnd gRPC service wrapper.
