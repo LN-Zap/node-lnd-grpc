@@ -3,7 +3,6 @@ import { join, resolve } from 'path'
 import { spawn } from 'child_process'
 import rimraf from 'rimraf'
 import { extensions } from 'lnd-binary'
-import split2 from 'split2'
 
 export const lndBinPath = resolve('node_modules/lnd-binary/vendor', 'lnd' + extensions.getBinaryFileExtension())
 

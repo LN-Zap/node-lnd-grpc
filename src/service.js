@@ -13,6 +13,8 @@ import {
   createMacaroonCreds,
   getLatestProtoVersion,
   getProtoDir,
+  onInvalidTransition,
+  onPendingTransition,
 } from './utils'
 import registry from './registry'
 
@@ -42,7 +44,9 @@ class Service extends EventEmitter {
         onAfterConnect: this.onAfterConnect.bind(this),
         onBeforeDisconnect: this.onBeforeDisconnect.bind(this),
         onAfterDisconnect: this.onAfterDisconnect.bind(this),
-      },
+        onInvalidTransition,
+        onPendingTransition,
+      }
     })
 
     this.useMacaroon = true

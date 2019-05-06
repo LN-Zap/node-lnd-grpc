@@ -59,7 +59,7 @@ test('ready -> connect (active)', async t => {
 })
 
 test('locked -> connect', async t => {
-  t.plan(1)
+  t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   await grpc.connect()
@@ -67,11 +67,12 @@ test('locked -> connect', async t => {
     await grpc.connect()
   } catch (e) {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from locked state')
+    t.ok(e.stack, 'error has stack')
   }
 })
 
 test('active -> connect', async t => {
-  t.plan(1)
+  t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   await grpc.connect()
@@ -79,6 +80,7 @@ test('active -> connect', async t => {
     await grpc.connect()
   } catch (e) {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from active state')
+    t.ok(e.stack, 'error has stack')
   }
 })
 
@@ -101,11 +103,12 @@ test('active -> disconnect', async t => {
 })
 
 test('ready -> disconnect', async t => {
-  t.plan(1)
+  t.plan(2)
   try {
     const grpc = new LndGrpc(grpcOptions)
     await grpc.disconnect()
   } catch (e) {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from ready state')
+    t.ok(e.stack, 'error has stack')
   }
 })
