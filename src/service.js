@@ -56,22 +56,22 @@ class Service extends EventEmitter {
   // ------------------------------------
 
   is(...args) {
-    return this.fsm.is(args)
+    return this.fsm.is(...args)
   }
   can(...args) {
-    return this.fsm.can(args)
+    return this.fsm.can(...args)
   }
   observe(...args) {
-    return this.fsm.observe(args)
+    return this.fsm.observe(...args)
   }
   get state() {
     return this.fsm.state
   }
   connect(...args) {
-    return this.fsm.connect(args)
+    return this.fsm.connect(...args)
   }
   disconnect(...args) {
-    return this.fsm.disconnect(args)
+    return this.fsm.disconnect(...args)
   }
 
   // ------------------------------------
