@@ -168,7 +168,11 @@ class LndGrpc extends EventEmitter {
         .map(serviceName => {
           const service = this.services[serviceName]
           service.version = version
-          return service.connect()
+          // Disable waiting for cert/macaroon for sub-services.
+          return service.connect({
+            waitForCert: false,
+            waitForMacaroon: false,
+          })
         }),
     )
   }
@@ -200,7 +204,9 @@ class LndGrpc extends EventEmitter {
     let walletState
     try {
       await this.services.WalletUnlocker.connect()
-      await this.services.WalletUnlocker.unlockWallet('-null-')
+      // Call the unlockWallet methpd with a missing password argument.
+      // This is a way of probing the api to determine it's state.
+      await this.services.WalletUnlocker.unlockWallet()
     } catch (error) {
       switch (error.code) {
         /*

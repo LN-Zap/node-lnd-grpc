@@ -81,9 +81,9 @@ class Service extends EventEmitter {
   /**
    * Connect to the gRPC interface.
    */
-  async onBeforeConnect() {
+  async onBeforeConnect(lifecycle, options) {
     this.debug(`Connecting to ${this.serviceName} gRPC service`)
-    await this.establishConnection()
+    await this.establishConnection(options)
   }
 
   /**
@@ -118,7 +118,7 @@ class Service extends EventEmitter {
    * Establish a connection to the Lightning interface.
    */
   async establishConnection(options = {}) {
-    const { version } = options
+    const opts = { ...this.options, ...options }
     const {
       host,
       cert,
@@ -127,10 +127,11 @@ class Service extends EventEmitter {
       waitForCert,
       waitForMacaroon,
       grpcOptions: customGrpcOptions = {},
-    } = this.options
+      version,
+    } = opts
 
-    // Find the most recent proto file for this service.
-    this.version = version || this.version || getLatestProtoVersion()
+    // Find the most recent proto file for this service if a specific version was not requested.
+    this.version = version || getLatestProtoVersion()
 
     const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
     const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
