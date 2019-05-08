@@ -65,13 +65,13 @@ class LndGrpc extends EventEmitter {
   // ------------------------------------
 
   is(...args) {
-    return this.fsm.is(args)
+    return this.fsm.is(...args)
   }
   can(...args) {
-    return this.fsm.can(args)
+    return this.fsm.can(...args)
   }
   observe(...args) {
-    return this.fsm.observe(args)
+    return this.fsm.observe(...args)
   }
   get state() {
     return this.fsm.state
@@ -100,17 +100,17 @@ class LndGrpc extends EventEmitter {
   }
 
   async activateWalletUnlocker(...args) {
-    await this.fsm.activateWalletUnlocker(args)
+    await this.fsm.activateWalletUnlocker(...args)
     this.emit('locked')
   }
 
   async activateLightning(...args) {
-    await this.fsm.activateLightning(args)
+    await this.fsm.activateLightning(...args)
     this.emit('active')
   }
 
   async disconnect(...args) {
-    await this.fsm.disconnect(args)
+    await this.fsm.disconnect(...args)
     this.emit('disconnected')
   }
 
