@@ -85,7 +85,7 @@ class LndGrpc extends EventEmitter {
     await validateHost(host)
 
     // Probe the services to determine the wallet state.
-    const walletState = await this.determineWalletState()
+    const walletState = await this.determineWalletState({ keepalive: true })
 
     // Update our state accordingly.
     switch (walletState) {
@@ -138,7 +138,9 @@ class LndGrpc extends EventEmitter {
   async onBeforeActivateWalletUnlocker() {
     // Set up a listener that connects to the lightning interface as soon as the wallet has been unlocked.
     this.services.WalletUnlocker.on('unlocked', this.activateLightning.bind(this))
-    await this.services.WalletUnlocker.connect()
+    if (this.services.WalletUnlocker.can('connect')) {
+      await this.services.WalletUnlocker.connect()
+    }
   }
 
   /**
@@ -193,8 +195,9 @@ class LndGrpc extends EventEmitter {
   /**
    * Probe to determine what state lnd is in.
    */
-  async determineWalletState() {
+  async determineWalletState({ keepalive }) {
     debug('Attempting to determine wallet state')
+    let walletState
     try {
       await this.services.WalletUnlocker.connect()
       await this.services.WalletUnlocker.unlockWallet('-null-')
@@ -207,7 +210,8 @@ class LndGrpc extends EventEmitter {
          */
         case status.UNIMPLEMENTED:
           debug('Determined wallet state as:', WALLET_STATE_ACTIVE)
-          return WALLET_STATE_ACTIVE
+          walletState = WALLET_STATE_ACTIVE
+          break
 
         /**
           `UNKNOWN` indicates that unlockWallet was called without an argument which is invalid.
@@ -215,7 +219,8 @@ class LndGrpc extends EventEmitter {
         */
         case status.UNKNOWN:
           debug('Determined wallet state as:', WALLET_STATE_LOCKED)
-          return WALLET_STATE_LOCKED
+          walletState = WALLET_STATE_LOCKED
+          break
 
         /**
           Bubble all other errors back to the caller and abort the connection attempt.
@@ -227,9 +232,10 @@ class LndGrpc extends EventEmitter {
           throw error
       }
     } finally {
-      if (this.services.WalletUnlocker.can('disconnect')) {
+      if (!keepalive && walletState !== WALLET_STATE_LOCKED && this.services.WalletUnlocker.can('disconnect')) {
         await this.services.WalletUnlocker.disconnect()
       }
+      return walletState
     }
   }
 
