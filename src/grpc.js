@@ -217,7 +217,7 @@ class LndGrpc extends EventEmitter {
         case status.UNIMPLEMENTED:
           debug('Determined wallet state as:', WALLET_STATE_ACTIVE)
           walletState = WALLET_STATE_ACTIVE
-          break
+          return walletState
 
         /**
           `UNKNOWN` indicates that unlockWallet was called without an argument which is invalid.
@@ -226,7 +226,7 @@ class LndGrpc extends EventEmitter {
         case status.UNKNOWN:
           debug('Determined wallet state as:', WALLET_STATE_LOCKED)
           walletState = WALLET_STATE_LOCKED
-          break
+          return walletState
 
         /**
           Bubble all other errors back to the caller and abort the connection attempt.
@@ -241,7 +241,6 @@ class LndGrpc extends EventEmitter {
       if (!keepalive && walletState !== WALLET_STATE_LOCKED && this.services.WalletUnlocker.can('disconnect')) {
         await this.services.WalletUnlocker.disconnect()
       }
-      return walletState
     }
   }
 
