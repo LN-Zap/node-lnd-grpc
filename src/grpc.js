@@ -3,7 +3,12 @@ import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import lndconnect from 'lndconnect'
 import { status } from '@grpc/grpc-js'
-import { grpcSslCipherSuites, validateHost } from './utils'
+import {
+  grpcSslCipherSuites,
+  validateHost,
+  onInvalidTransition,
+  onPendingTransition
+} from './utils'
 import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
 import registry from './registry'
 
@@ -46,7 +51,13 @@ class LndGrpc extends EventEmitter {
         onBeforeActivateLightning: this.onBeforeActivateLightning.bind(this),
         onBeforeDisconnect: this.onBeforeDisconnect.bind(this),
         onAfterDisconnect: this.onAfterDisconnect.bind(this),
+        onInvalidTransition,
+        onPendingTransition,
       },
+
+      onInvalidTransition(transition, from, to) {
+        throw Object.assign(new Error(`transition is invalid in current state`), { transition, from, to })
+      }
     })
 
     // Define services.

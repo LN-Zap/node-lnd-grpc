@@ -6,5 +6,6 @@ export grpcSslCipherSuites from './grpcSslCipherSuites'
 export promisifiedCall from './promisifiedCall'
 export validateHost from './validateHost'
 export waitForFile from './waitForFile'
+export { onInvalidTransition, onPendingTransition } from './stateMachineErrorHandlers'
 
 export * from './proto'
