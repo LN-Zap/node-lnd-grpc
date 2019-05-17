@@ -52,7 +52,7 @@
     "babel-tape-runner": "3.0.0",
     "core-js": "3.0.1",
     "eslint": "5.16.0",
-    "eslint-config-prettier": "4.2.0",
+    "eslint-config-prettier": "4.3.0",
     "lnd-binary": "0.3.10",
     "prettier": "1.17.1",
     "prettier-eslint": "8.8.2",
