@@ -10,7 +10,7 @@
   "scripts": {
     "test": "babel-tape-runner test/*.js | tap-spec",
     "lint": "prettier-eslint --write \"./**/*.{js,json,md}\"",
-    "build": "npm run clean && babel src --out-dir dist",
+    "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir dist",
     "clean": "rimraf -r ./dist",
     "preversion": "npm test",
     "prepack": "npm run build"
@@ -51,6 +51,7 @@
     "babel-plugin-source-map-support": "2.0.1",
     "babel-tape-runner": "3.0.0",
     "core-js": "3.0.1",
+    "cross-env": "5.2.0",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.3.0",
     "lnd-binary": "0.3.10",
@@ -59,6 +60,7 @@
     "prettier-eslint-cli": "4.7.1",
     "rimraf": "2.6.3",
     "sinon": "7.3.2",
+    "source-map-support": "0.5.12",
     "split2": "3.1.1",
     "tap-spec": "5.0.0",
     "tape": "4.10.1",
@@ -71,7 +73,6 @@
     "javascript-state-machine": "3.1.0",
     "lndconnect": "0.2.5",
     "semver": "6.0.0",
-    "source-map-support": "0.5.12",
     "untildify": "4.0.0",
     "validator": "10.11.0"
   }

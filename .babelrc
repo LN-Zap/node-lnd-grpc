@@ -3,6 +3,9 @@
     "development": {
       "sourceMaps": "inline",
       "plugins": ["source-map-support"]
+    },
+    "production": {
+      "sourceMaps": "inline"
     }
   },
   "presets": [
