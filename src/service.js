@@ -1,5 +1,6 @@
 import { join } from 'path'
 import EventEmitter from 'events'
+import defaultsDeep from 'lodash.defaultsdeep'
 import { credentials, loadPackageDefinition, status } from '@grpc/grpc-js'
 import { load } from '@grpc/proto-loader'
 import StateMachine from 'javascript-state-machine'
@@ -24,6 +25,16 @@ const CONNECT_WAIT_TIMEOUT = 10000
 // Time (in ms) to wait for a cert/macaroon file to become present.
 const FILE_WAIT_TIMEOUT = 10000
 
+// Default value for `maxSessionMemory` is 10 which is quite low for the lnd gRPC server, which can stream a lot of data
+// in a short space of time. We increase this to prevent `NGHTTP2_ENHANCE_YOUR_CALM` errors from http2 streams.
+// See https://nodejs.org/api/http2.html#http2_http2_connect_authority_options_listener.
+const MAX_SESSION_MEMORY = 50
+
+const DEFAULT_OPTIONS = {
+  grpcOptions,
+  connectionOptions: { maxSessionMemory: MAX_SESSION_MEMORY },
+}
+
 /**
  * Base class for lnd gRPC services.
  * @extends EventEmitter
@@ -46,12 +57,12 @@ class Service extends EventEmitter {
         onAfterDisconnect: this.onAfterDisconnect.bind(this),
         onInvalidTransition,
         onPendingTransition,
-      }
+      },
     })
 
     this.useMacaroon = true
     this.service = null
-    this.options = options
+    this.options = defaultsDeep(options, DEFAULT_OPTIONS)
     this.debug = debug(`lnrpc:service:${this.serviceName}`)
   }
 
@@ -122,7 +133,7 @@ class Service extends EventEmitter {
    * Establish a connection to the Lightning interface.
    */
   async establishConnection(options = {}) {
-    const opts = { ...this.options, ...options }
+    const opts = defaultsDeep(options, this.options)
     const {
       host,
       cert,
@@ -130,7 +141,8 @@ class Service extends EventEmitter {
       protoDir,
       waitForCert,
       waitForMacaroon,
-      grpcOptions: customGrpcOptions = {},
+      grpcOptions,
+      connectionOptions,
       version,
     } = opts
 
@@ -143,7 +155,7 @@ class Service extends EventEmitter {
     this.debug(`Establishing gRPC connection to ${this.serviceName} with proto file %s`, filepath)
 
     // Load gRPC package definition as a gRPC object hierarchy.
-    const packageDefinition = await load(filepath, { ...grpcOptions, ...customGrpcOptions })
+    const packageDefinition = await load(filepath, grpcOptions)
     const rpc = loadPackageDefinition(packageDefinition)
 
     // Wait for the cert to exist (this can take some time immediately after starting lnd).
@@ -167,6 +179,9 @@ class Service extends EventEmitter {
     }
 
     try {
+      // Set custom connection options.
+      defaultsDeep(creds.connectionOptions, connectionOptions)
+
       // Create a new gRPC client instance.
       const rpcService = rpc[protoPackage][this.serviceName]
       this.service = new rpcService(host, creds)
