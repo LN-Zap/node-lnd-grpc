@@ -3,12 +3,7 @@ import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import lndconnect from 'lndconnect'
 import { status } from '@grpc/grpc-js'
-import {
-  grpcSslCipherSuites,
-  validateHost,
-  onInvalidTransition,
-  onPendingTransition
-} from './utils'
+import { grpcSslCipherSuites, validateHost, onInvalidTransition, onPendingTransition } from './utils'
 import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
 import registry from './registry'
 
@@ -57,7 +52,7 @@ class LndGrpc extends EventEmitter {
 
       onInvalidTransition(transition, from, to) {
         throw Object.assign(new Error(`transition is invalid in current state`), { transition, from, to })
-      }
+      },
     })
 
     // Define services.
@@ -147,8 +142,6 @@ class LndGrpc extends EventEmitter {
    * Connect to and activate the wallet unlocker api.
    */
   async onBeforeActivateWalletUnlocker() {
-    // Set up a listener that connects to the lightning interface as soon as the wallet has been unlocked.
-    this.services.WalletUnlocker.on('unlocked', this.activateLightning.bind(this))
     if (this.services.WalletUnlocker.can('connect')) {
       await this.services.WalletUnlocker.connect()
     }
@@ -215,7 +208,7 @@ class LndGrpc extends EventEmitter {
     let walletState
     try {
       await this.services.WalletUnlocker.connect()
-      // Call the unlockWallet methpd with a missing password argument.
+      // Call the unlockWallet method with a missing password argument.
       // This is a way of probing the api to determine it's state.
       await this.services.WalletUnlocker.unlockWallet()
     } catch (error) {
