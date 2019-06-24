@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "0.4.3",
-    "@grpc/proto-loader": "0.5.1",
+    "@ln-zap/proto-loader": "0.5.1",
     "debug": "4.1.1",
     "javascript-state-machine": "3.1.0",
     "lndconnect": "0.2.7",
