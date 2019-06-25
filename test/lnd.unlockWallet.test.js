@@ -19,6 +19,7 @@ test('unlockWallet:test', async t => {
       wallet_password: Buffer.from('password'),
       cipher_seed_mnemonic: seed,
     })
+    grpc.activateLightning()
     grpc.once('active', async () => {
       try {
         await grpc.disconnect()
@@ -26,9 +27,11 @@ test('unlockWallet:test', async t => {
         lndProcess = await spawnLnd()
         grpc = new LndGrpc(grpcOptions)
         await grpc.connect()
-        grpc.services.WalletUnlocker.unlockWallet({
+
+        await grpc.services.WalletUnlocker.unlockWallet({
           wallet_password: Buffer.from('password'),
         })
+        grpc.activateLightning()
         grpc.once('active', async () => {
           t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
         })
