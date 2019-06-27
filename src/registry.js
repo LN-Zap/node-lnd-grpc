@@ -10,6 +10,39 @@ const commonServices = [
 ]
 
 export default {
+  '0.7.0-beta': {
+    services: [
+      ...commonServices,
+      {
+        name: 'Autopilot',
+        proto: 'autopilotrpc/autopilot.proto',
+      },
+      {
+        name: 'ChainNotifier',
+        proto: 'chainrpc/chainnotifier.proto',
+      },
+      {
+        name: 'Invoices',
+        proto: 'invoicesrpc/invoices.proto',
+      },
+      {
+        name: 'Router',
+        proto: 'routerrpc/router.proto',
+      },
+      {
+        name: 'Signer',
+        proto: 'signrpc/signer.proto',
+      },
+      {
+        name: 'WalletKit',
+        proto: 'walletrpc/walletkit.proto',
+      },
+      {
+        name: 'Watchtower',
+        proto: 'watchtowerrpc/watchtowerrpc.proto',
+      },
+    ],
+  },
   '0.6.0-beta': {
     services: [
       ...commonServices,
