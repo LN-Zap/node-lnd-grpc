@@ -2,7 +2,7 @@ import { getClosestProtoVersion, getLatestProtoVersion, getDeadline } from '../u
 import Service from '../service'
 
 // Time (in ms) to wait for call to getInfo to complete.
-const GET_INFO_WAIT_TIMEOUT = 2 * 1000
+const GET_INFO_WAIT_TIMEOUT = 5 * 1000
 
 /**
  * Lightning service controller.
