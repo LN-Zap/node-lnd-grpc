@@ -19,11 +19,11 @@ import {
 } from './utils'
 import registry from './registry'
 
-// Time (in ms) to wait for a connection to be established.
-const CONNECT_WAIT_TIMEOUT = 10000
+// Time (in seconds) to wait for a connection to be established.
+const CONNECT_WAIT_TIMEOUT = 10 * 1000
 
 // Time (in ms) to wait for a cert/macaroon file to become present.
-const FILE_WAIT_TIMEOUT = 10000
+const FILE_WAIT_TIMEOUT = 10 * 1000
 
 // Default value for `maxSessionMemory` is 10 which is quite low for the lnd gRPC server, which can stream a lot of data
 // in a short space of time. We increase this to prevent `NGHTTP2_ENHANCE_YOUR_CALM` errors from http2 streams.
@@ -214,15 +214,15 @@ class Service extends EventEmitter {
       }
       // If this method is a stream, bind it to the service instance as is.
       if (method.requestStream || method.responseStream) {
-        this[originalName] = (payload = {}) => {
-          this.debug(`Calling ${this.serviceName}.${originalName} with payload: %o`, payload)
-          return this.service[originalName].bind(this.service).call()
+        this[originalName] = (payload = {}, options = {}) => {
+          this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
+          return this.service[originalName].bind(this.service).call(payload, options)
         }
       }
       // Otherwise, promisify and bind to the service instance.
-      this[originalName] = (payload = {}) => {
-        this.debug(`Calling ${this.serviceName}.${originalName} with payload: %o`, payload)
-        return promisifiedCall(this.service, this.service[originalName], payload)
+      this[originalName] = (payload = {}, options = {}) => {
+        this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
+        return promisifiedCall(this.service, this.service[originalName], payload, options)
       }
     })
   }
