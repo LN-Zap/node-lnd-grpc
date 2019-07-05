@@ -6,6 +6,6 @@ import { promisify } from 'util'
  * @param {*} method
  * @param {*} args
  */
-export default function promisifiedCall(thisArg, method, args) {
-  return promisify(method).call(thisArg, args)
+export default function promisifiedCall(thisArg, method, ...args) {
+  return promisify(method).call(thisArg, ...args)
 }
