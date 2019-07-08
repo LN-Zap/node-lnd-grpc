@@ -16,19 +16,11 @@ import {
   getProtoDir,
   onInvalidTransition,
   onPendingTransition,
+  CONNECT_WAIT_TIMEOUT,
+  FILE_WAIT_TIMEOUT,
+  MAX_SESSION_MEMORY,
 } from './utils'
 import registry from './registry'
-
-// Time (in seconds) to wait for a connection to be established.
-const CONNECT_WAIT_TIMEOUT = 10 * 1000
-
-// Time (in ms) to wait for a cert/macaroon file to become present.
-const FILE_WAIT_TIMEOUT = 10 * 1000
-
-// Default value for `maxSessionMemory` is 10 which is quite low for the lnd gRPC server, which can stream a lot of data
-// in a short space of time. We increase this to prevent `NGHTTP2_ENHANCE_YOUR_CALM` errors from http2 streams.
-// See https://nodejs.org/api/http2.html#http2_http2_connect_authority_options_listener.
-const MAX_SESSION_MEMORY = 50
 
 const DEFAULT_OPTIONS = {
   grpcOptions,
@@ -187,7 +179,7 @@ class Service extends EventEmitter {
       this.service = new rpcService(host, creds)
 
       // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT / 1000))
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)
