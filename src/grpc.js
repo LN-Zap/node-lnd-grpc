@@ -4,18 +4,19 @@ import createDebug from 'debug'
 import lndconnect from 'lndconnect'
 import { status } from '@grpc/grpc-js'
 import {
+  getDeadline,
   grpcSslCipherSuites,
   validateHost,
   onInvalidTransition,
-  onPendingTransition
+  onPendingTransition,
+  PROBE_TIMEOUT,
+  WALLET_STATE_LOCKED,
+  WALLET_STATE_ACTIVE,
 } from './utils'
 import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
 import registry from './registry'
 
 const debug = createDebug('lnrpc:grpc')
-
-const WALLET_STATE_LOCKED = 'WALLET_STATE_LOCKED'
-const WALLET_STATE_ACTIVE = 'WALLET_STATE_ACTIVE'
 
 // Set up SSL with the cypher suits that we need.
 if (!process.env.GRPC_SSL_CIPHER_SUITES) {
@@ -57,7 +58,7 @@ class LndGrpc extends EventEmitter {
 
       onInvalidTransition(transition, from, to) {
         throw Object.assign(new Error(`transition is invalid in current state`), { transition, from, to })
-      }
+      },
     })
 
     // Define services.
@@ -96,7 +97,7 @@ class LndGrpc extends EventEmitter {
     await validateHost(host)
 
     // Probe the services to determine the wallet state.
-    const walletState = await this.determineWalletState({ keepalive: true })
+    const walletState = await this.determineWalletState()
 
     // Update our state accordingly.
     switch (walletState) {
@@ -210,22 +211,29 @@ class LndGrpc extends EventEmitter {
   /**
    * Probe to determine what state lnd is in.
    */
-  async determineWalletState({ keepalive }) {
+  async determineWalletState(options = { keepalive: false }) {
     debug('Attempting to determine wallet state')
     let walletState
     try {
       await this.services.WalletUnlocker.connect()
       // Call the unlockWallet methpd with a missing password argument.
       // This is a way of probing the api to determine it's state.
-      await this.services.WalletUnlocker.unlockWallet()
+      await this.services.WalletUnlocker.unlockWallet({}, { deadline: getDeadline(PROBE_TIMEOUT) })
     } catch (error) {
       switch (error.code) {
         /*
           `UNIMPLEMENTED` indicates that the requested operation is not implemented or not supported/enabled in the
            service. This implies that the wallet is already unlocked, since the WalletUnlocker service is not active.
-           See https://github.com/grpc/grpc-node/blob/master/packages/grpc-native-core/src/constants.js#L129
+           See
+
+           `DEADLINE_EXCEEDED` indicates that the deadline expired before the operation could complete. In the case of
+           our probe here the likely cause of this is that we are connecting to an lnd node where the `noseedbackup`
+           flag has been set and therefore the `WalletUnlocker` interace is non-functional.
+
+           https://github.com/grpc/grpc-node/blob/master/packages/grpc-native-core/src/constants.js#L129.
          */
         case status.UNIMPLEMENTED:
+        case status.DEADLINE_EXCEEDED:
           debug('Determined wallet state as:', WALLET_STATE_ACTIVE)
           walletState = WALLET_STATE_ACTIVE
           return walletState
@@ -249,8 +257,8 @@ class LndGrpc extends EventEmitter {
           throw error
       }
     } finally {
-      if (!keepalive && walletState !== WALLET_STATE_LOCKED && this.services.WalletUnlocker.can('disconnect')) {
-        await this.services.WalletUnlocker.disconnect()
+      if (!options.keepalive && this.can('disconnect')) {
+        await this.disconnect()
       }
     }
   }
