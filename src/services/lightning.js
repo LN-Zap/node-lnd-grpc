@@ -1,5 +1,8 @@
-import { getClosestProtoVersion, getLatestProtoVersion } from '../utils'
+import { getClosestProtoVersion, getLatestProtoVersion, getDeadline } from '../utils'
 import Service from '../service'
+
+// Time (in ms) to wait for call to getInfo to complete.
+const GET_INFO_WAIT_TIMEOUT = 5 * 1000
 
 /**
  * Lightning service controller.
@@ -21,7 +24,7 @@ class Lightning extends Service {
     await this.establishConnection()
 
     // Once connected, make a call to getInfo in order to determine the api version.
-    const info = await this.getInfo()
+    const info = await this.getInfo({}, { deadline: getDeadline(GET_INFO_WAIT_TIMEOUT / 1000) })
     this.debug('Connected to Lightning gRPC: %O', info)
 
     // Determine most relevant proto version based on the api info.
