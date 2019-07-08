@@ -3,6 +3,7 @@ import { join, resolve } from 'path'
 import { spawn } from 'child_process'
 import rimraf from 'rimraf'
 import { extensions } from 'lnd-binary'
+import split2 from 'split2'
 
 export const lndBinPath = resolve('node_modules/lnd-binary/vendor', 'lnd' + extensions.getBinaryFileExtension())
 
@@ -19,17 +20,19 @@ export const spawnLnd = (options = {}) => {
     '--bitcoin.testnet',
     '--bitcoin.node=neutrino',
     '--neutrino.connect=testnet3-btcd.zaphq.io',
+    // '--noseedbackup',
+    // '--notls=1',
   ])
 
-  // // Listen for when neutrino prints data to stderr.
-  // process.stderr.pipe(split2()).on('data', line => {
-  //   console.error(line)
-  // })
-  //
-  // // Listen for when neutrino prints data to stdout.
-  // process.stdout.pipe(split2()).on('data', line => {
-  //   console.info(line)
-  // })
+  // Listen for when neutrino prints data to stderr.
+  process.stderr.pipe(split2()).on('data', line => {
+    console.error(line)
+  })
+
+  // Listen for when neutrino prints data to stdout.
+  process.stdout.pipe(split2()).on('data', line => {
+    console.info(line)
+  })
 
   return process
 }
