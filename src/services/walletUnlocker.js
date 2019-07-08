@@ -11,16 +11,16 @@ class WalletUnlocker extends Service {
     this.useMacaroon = false
   }
 
-  async initWallet(payload = {}) {
-    this.debug(`Calling ${this.serviceName}.initWallet with payload: %o`, payload)
-    const res = await promisifiedCall(this.service, this.service.initWallet, payload)
+  async initWallet(payload = {}, options = {}) {
+    this.debug(`Calling ${this.serviceName}.initWallet with payload: %o`, { payload, options })
+    const res = await promisifiedCall(this.service, this.service.initWallet, payload, options)
     this.emit('unlocked')
     return res
   }
 
-  async unlockWallet(payload = {}) {
-    this.debug(`Calling ${this.serviceName}.unlockWallet with payload: %o`, payload)
-    const res = await promisifiedCall(this.service, this.service.unlockWallet, payload)
+  async unlockWallet(payload = {}, options = {}) {
+    this.debug(`Calling ${this.serviceName}.unlockWallet with payload: %o`, { payload, options })
+    const res = await promisifiedCall(this.service, this.service.unlockWallet, payload, options)
     this.emit('unlocked')
     return res
   }
