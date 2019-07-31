@@ -5,8 +5,11 @@ export const WALLET_STATE_ACTIVE = 'WALLET_STATE_ACTIVE'
 // Time (in seconds) to wait for interface probe call to complete.
 export const PROBE_TIMEOUT = 3
 
-// Time (in seconds) to wait for a connection to be established.
+// Time (in seconds) to wait for a grpc connection to be established.
 export const CONNECT_WAIT_TIMEOUT = 10
+
+// global service connect deadline in ms
+export const SERVICE_CONNECT_TIMEOUT = 20 * 1000
 
 // Time (in ms) to wait for a cert/macaroon file to become present.
 export const FILE_WAIT_TIMEOUT = 10 * 1000

@@ -117,8 +117,13 @@ class LndGrpc extends EventEmitter {
   }
 
   async activateLightning(...args) {
-    await this.fsm.activateLightning(...args)
-    this.emit('active')
+    try {
+      await this.fsm.activateLightning(...args)
+      this.emit('active')
+    } catch (e) {
+      await this.disconnectAll()
+      throw e
+    }
   }
 
   async disconnect(...args) {

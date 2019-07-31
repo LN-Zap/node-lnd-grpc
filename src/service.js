@@ -15,10 +15,12 @@ import {
   getLatestProtoVersion,
   getProtoDir,
   onInvalidTransition,
+  promiseTimeout,
   onPendingTransition,
   CONNECT_WAIT_TIMEOUT,
   FILE_WAIT_TIMEOUT,
   MAX_SESSION_MEMORY,
+  SERVICE_CONNECT_TIMEOUT,
 } from './utils'
 import registry from './registry'
 
@@ -90,7 +92,7 @@ class Service extends EventEmitter {
    */
   async onBeforeConnect(lifecycle, options) {
     this.debug(`Connecting to ${this.serviceName} gRPC service`)
-    await this.establishConnection(options)
+    await promiseTimeout(SERVICE_CONNECT_TIMEOUT, this.establishConnection(options), 'Connection timeout out.')
   }
 
   /**
@@ -138,39 +140,39 @@ class Service extends EventEmitter {
       version,
     } = opts
 
-    // Find the most recent proto file for this service if a specific version was not requested.
-    this.version = version || getLatestProtoVersion()
-
-    const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
-    const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
-    const filepath = join(protoDir || getProtoDir(), this.version, protoPackage, protoFile)
-    this.debug(`Establishing gRPC connection to ${this.serviceName} with proto file %s`, filepath)
-
-    // Load gRPC package definition as a gRPC object hierarchy.
-    const packageDefinition = await load(filepath, grpcOptions)
-    const rpc = loadPackageDefinition(packageDefinition)
-
-    // Wait for the cert to exist (this can take some time immediately after starting lnd).
-    if (waitForCert) {
-      const waitTime = Number.isFinite(waitForCert) ? waitForCert : FILE_WAIT_TIMEOUT
-      await waitForFile(cert, waitTime)
-    }
-
-    // Create ssl credentials to use with the gRPC client.
-    let creds = await createSslCreds(cert)
-
-    // Add macaroon to credentials if service requires macaroons.
-    if (this.useMacaroon && macaroon) {
-      // Wait for the macaroon to exist (this can take some time immediately after Initializing a wallet).
-      if (waitForMacaroon) {
-        const waitTime = Number.isFinite(waitForMacaroon) ? waitForMacaroon : FILE_WAIT_TIMEOUT
-        await waitForFile(macaroon, waitTime)
-      }
-      const macaroonCreds = await createMacaroonCreds(macaroon)
-      creds = credentials.combineChannelCredentials(creds, macaroonCreds)
-    }
-
     try {
+      // Find the most recent proto file for this service if a specific version was not requested.
+      this.version = version || getLatestProtoVersion()
+
+      const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
+      const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
+      const filepath = join(protoDir || getProtoDir(), this.version, protoPackage, protoFile)
+      this.debug(`Establishing gRPC connection to ${this.serviceName} with proto file %s`, filepath)
+
+      // Load gRPC package definition as a gRPC object hierarchy.
+      const packageDefinition = await load(filepath, grpcOptions)
+      const rpc = loadPackageDefinition(packageDefinition)
+
+      // Wait for the cert to exist (this can take some time immediately after starting lnd).
+      if (waitForCert) {
+        const waitTime = Number.isFinite(waitForCert) ? waitForCert : FILE_WAIT_TIMEOUT
+        await waitForFile(cert, waitTime)
+      }
+
+      // Create ssl credentials to use with the gRPC client.
+      let creds = await createSslCreds(cert)
+
+      // Add macaroon to credentials if service requires macaroons.
+      if (this.useMacaroon && macaroon) {
+        // Wait for the macaroon to exist (this can take some time immediately after Initializing a wallet).
+        if (waitForMacaroon) {
+          const waitTime = Number.isFinite(waitForMacaroon) ? waitForMacaroon : FILE_WAIT_TIMEOUT
+          await waitForFile(macaroon, waitTime)
+        }
+        const macaroonCreds = await createMacaroonCreds(macaroon)
+        creds = credentials.combineChannelCredentials(creds, macaroonCreds)
+      }
+
       // Set custom connection options.
       defaultsDeep(creds.connectionOptions, connectionOptions)
 
