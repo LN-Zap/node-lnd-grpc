@@ -1,6 +1,6 @@
 {
   "name": "lnd-grpc",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Repository of lnd rpc protocol files and utilities for working with them",
   "main": "./dist/index.js",
   "engines": {
