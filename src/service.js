@@ -212,9 +212,11 @@ class Service extends EventEmitter {
         }
       }
       // Otherwise, promisify and bind to the service instance.
-      this[originalName] = (payload = {}, options = {}) => {
-        this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
-        return promisifiedCall(this.service, this.service[originalName], payload, options)
+      else {
+        this[originalName] = (payload = {}, options = {}) => {
+          this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
+          return promisifiedCall(this.service, this.service[originalName], payload, options)
+        }
       }
     })
   }
