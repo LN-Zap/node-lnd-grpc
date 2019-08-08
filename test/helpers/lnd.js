@@ -4,6 +4,9 @@ import { spawn } from 'child_process'
 import rimraf from 'rimraf'
 import { extensions } from 'lnd-binary'
 import split2 from 'split2'
+import debug from 'debug'
+
+const log = debug(`lnrpc:test`)
 
 export const lndBinPath = resolve('node_modules/lnd-binary/vendor', 'lnd' + extensions.getBinaryFileExtension())
 
@@ -26,12 +29,12 @@ export const spawnLnd = (options = {}) => {
 
   // Listen for when neutrino prints data to stderr.
   process.stderr.pipe(split2()).on('data', line => {
-    console.error(line)
+    log(line)
   })
 
   // Listen for when neutrino prints data to stdout.
   process.stdout.pipe(split2()).on('data', line => {
-    console.info(line)
+    log(line)
   })
 
   return process
