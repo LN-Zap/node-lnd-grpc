@@ -10,7 +10,7 @@
   "scripts": {
     "test": "babel-tape-runner test/*.js | tap-spec",
     "lint": "prettier-eslint --write \"./**/*.{js,json,md}\"",
-    "build": "npm run clean && cross-env babel src --out-dir dist",
+    "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir dist",
     "clean": "rimraf -r ./dist",
     "preversion": "npm test",
     "prepack": "npm run build"
