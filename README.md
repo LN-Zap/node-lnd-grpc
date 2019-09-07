@@ -51,41 +51,41 @@ const grpc = new LndGrpc(options)
 
 The constructor accepts the following options:
 
-- **lndconnectUri {[string]}:**  
+- **lndconnectUri** {[string]}:  
   An [lndconnect uri](https://github.com/LN-Zap/node-lndconnect) that encodes the lnd connection details (host, cert, and macaroon). If `lndconnectUri` is set it will override the `host`, `cert`, and `macaroon` properties (below)
 
-- **host {[string]}:**  
+- **host** {[string]}:  
   Hostname and port of lnd gRPC. (extracted from `lndconnectUri` if provided)
 
-- **cert {[string]}:**  
+- **cert** {[string]}:  
   TLS certificate of the lnd node. This can be a path to the TLS cert or PEM ended cert data. (extracted from `lndconnectUri` if provided)
 
-- **macaroon {[string]}:**  
+- **macaroon** {[string]}:  
   Macaroon for the lnd node. This can be a path to the macaroon file or hex encoded macaroon data. (extracted from `lndconnectUri` if provided)
 
-- **waitForCert {[boolean|number]}:**  
+- **waitForCert** {[boolean|number]}:  
   Time (ms) to wait for TLS certificate before aborting connection attempt.
 
   This is useful in the case where you can not guarantee that the TLS certificate exists at the time when you attempt to establish the connection.
 
   Set to `true` to use the default of 10 seconds.
 
-- **waitForMacaroon {[boolean|number]}:**  
+- **waitForMacaroon** {[boolean|number]}:  
   Time (ms) to wait for macaroon before aborting connection attempt.
 
   This is useful in the case where you are connecting to a local node where a wallet does not already exist. After calling lnd's `initWallet` method to create a new wallet, it can take some time for lnd to initialize and create the wallet's macaroons.
 
   Set to `true` to use the default of 10 seconds.
 
-- **version {[string]}:**  
+- **version** {[string]}:  
   If you know which version of lnd you are connecting to in advance you can specify that here.
 
   By default, we use the latest proto files available when connecting to lnd. As soon as the wallet is unlocked, we call lnd's `getInfo` method in order to determine which version of lnd is running. If needed, we will reconnect using a more appropriate proto version.
 
-- **protoDir {[string]}:**  
+- **protoDir** {[string]}:  
   Custom path to rpc proto files. [advanced](#advanced-settings)
 
-- **grpcOptions {[Object]}:**  
+- **grpcOptions** {[Object]}:  
   Custom gRPC options. [advanced](#advanced-settings)
 
 **Minimal example:**
@@ -123,12 +123,21 @@ await grpc.connect()
 console.log(grpc.state) // active|locked
 ```
 
-After successfully connecting, `state` will be set to one of the following, depending on the state of the node that you are connecting to:
-
-- `locked`: The node is locked (`WalletUnlocker` interface is active).
-- `active`: The node is unlocked (All other interfaces are active).
-
 After establishing a connection you can access all available lnd gRPC interfaces under the `services` property.
+
+### Unlock & Activate
+
+If the wallet state was determined to be `locked` when the connection was established you must first unlock the wallet and then activate the Lightning service in order to access methods on the Lightnig service or any other grpc subservice that requires the node to be unlocked.
+
+```js
+const { WalletUnlocker } = grpc.services
+if (grpc.state === 'locked') {
+  await WalletUnlocker.unlockWallet({ wallet_password: Buffer.from('your wallet password') })
+  await grpc.activateLightning()
+
+  console.log(grpc.state) // active
+}
+```
 
 ### Disconnect
 
@@ -169,6 +178,8 @@ if (grpc.state === 'locked') {
   await WalletUnlocker.unlockWallet({
     wallet_password: Buffer.from('mypassword'),
   })
+  // After unlocking the wallet, activate the Lightning service and all of it's subservices.
+  await WalletUnlocker.activateLightning()
 }
 
 // Make some api calls...
@@ -186,24 +197,73 @@ const cancelInvoiceRes = await Invoices.cancelInvoice({
 await grpc.disconnect()
 ```
 
+### States
+
+The grpc service will be in one of the following states at all times.
+
+**ready**
+
+The `ready` state is the initial state of all new lnd-grpc service instances and indicates that a connection has not yet been established.
+
+**locked**
+
+The `locked` state indicates that a connection has been established and the node was last known to be in a locked state.
+
+**active**
+
+The `active` state indicates that a connection has been established and the node was last known to be in an active (unlocked) state.
+
 ### Events
 
-**Event: 'locked'**
+**locked**
 
 The `locked` event is emitted when it has been determined that the wallet is locked and the `WalletUnlocker` interface is active.
 
-**Event: 'active'**
+**active**
 
 The `active` event is emitted when it has been determined that the wallet is unlocked and the `Lightning` interface is active.
 
-**Event: 'disconnected'**
+**disconnected**
 
 The `disconnected` event is emitted after calling `disconnect`, once the connection has been fully closed.
+
+### Helpers
+
+**is**
+
+Checks wether the service is in a given state.
+
+Example:
+
+```js
+assert(grpc.is('active')) // test wether the service state is active.
+```
+
+**can**
+
+Checks wether the service can carry out a given state transition.
+
+Example:
+
+```js
+assert(grpc.can('activateLightning')) // test wether the service can activate the lightning service
+```
+
+**waitForState**
+
+Wait for the service to enter a particular state.
+
+Example:
+
+```js
+await grpc.waitForState('active')
+console.log(grpc.state) // active
+```
 
 ### Advanced settings
 
 **gRPC Options**
-
+x
 Under the hood we use the [`grpc-js`](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) library for the gRPC handling. By default we use the following options to control its behaviour.
 
 ```js
