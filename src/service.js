@@ -209,14 +209,14 @@ class Service extends EventEmitter {
       // If this method is a stream, bind it to the service instance as is.
       if (method.requestStream || method.responseStream) {
         this[originalName] = (payload = {}, options = {}) => {
-          this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
-          return this.service[originalName].bind(this.service).call(payload, options)
+          this.debug(`Calling ${this.serviceName}.${originalName} sync with: %o`, { payload, options })
+          return this.service[originalName].bind(this.service).call(this.service, payload, options)
         }
       }
       // Otherwise, promisify and bind to the service instance.
       else {
         this[originalName] = (payload = {}, options = {}) => {
-          this.debug(`Calling ${this.serviceName}.${originalName} with: %o`, { payload, options })
+          this.debug(`Calling ${this.serviceName}.${originalName} async with: %o`, { payload, options })
           return promisifiedCall(this.service, this.service[originalName], payload, options)
         }
       }
