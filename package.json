@@ -53,7 +53,7 @@
     "core-js": "3.2.1",
     "cross-env": "5.2.1",
     "eslint": "6.3.0",
-    "eslint-config-prettier": "6.0.0",
+    "eslint-config-prettier": "6.2.0",
     "lnd-binary": "0.3.13",
     "prettier": "1.18.2",
     "prettier-eslint": "9.0.0",
