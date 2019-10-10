@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
-import lndconnect from 'lndconnect'
+import parse from 'lndconnect/parse'
 import { status } from '@grpc/grpc-js'
 import {
   getDeadline,
@@ -35,7 +35,7 @@ class LndGrpc extends EventEmitter {
 
     // If an lndconnect uri was provided, extract the connection details from that.
     if (options.lndconnectUri) {
-      const connectionInfo = lndconnect.parse(options.lndconnectUri)
+      const connectionInfo = parse(options.lndconnectUri)
       Object.assign(this.options, connectionInfo)
     }
 

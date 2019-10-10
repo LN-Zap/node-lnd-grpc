@@ -1,6 +1,8 @@
 import fs from 'fs'
 import { promisify } from 'util'
+import { basename } from 'path'
 import untildify from 'untildify'
+import decodeMacaroon from 'lndconnect/decodeMacaroon'
 import { credentials, Metadata } from '@grpc/grpc-js'
 
 const readFile = promisify(fs.readFile)
@@ -12,12 +14,17 @@ const readFile = promisify(fs.readFile)
  */
 const createMacaroonCreds = async macaroonPath => {
   const metadata = new Metadata()
+  let lndMacaroon
 
   if (macaroonPath) {
     // If the macaroon is already in hex format, add as is.
     const isHex = /^[0-9a-fA-F]+$/.test(macaroonPath)
     if (isHex) {
-      metadata.add('macaroon', macaroonPath)
+      lndMacaroon = macaroonPath
+    }
+    // If it's not a filepath, then assume it is a base64url encoded string.
+    else if (macaroonPath === basename(macaroonPath)) {
+      lndMacaroon = decodeMacaroon(macaroonPath)
     }
     // Otherwise, treat it as a file path - load the file and convert to hex.
     else {
@@ -26,8 +33,9 @@ const createMacaroonCreds = async macaroonPath => {
         error.code = 'LND_GRPC_MACAROON_ERROR'
         throw error
       })
-      metadata.add('macaroon', macaroon.toString('hex'))
+      lndMacaroon = macaroon.toString('hex')
     }
+    metadata.add('macaroon', lndMacaroon)
   }
   return credentials.createFromMetadataGenerator((params, callback) => callback(null, metadata))
 }

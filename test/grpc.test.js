@@ -10,6 +10,9 @@ const host = `${hostname}-lnd.zaphq.io:10009`
 const cert = join(__dirname, `fixtures/${hostname}`, 'tls.cert')
 const macaroon = join(__dirname, `fixtures/${hostname}`, 'readonly.macaroon')
 
+const lndconenctString =
+  'lndconnect://testnet3-lnd.zaphq.io:10009?cert=MIICFzCCAb2gAwIBAgIRAIDeyONMGAAGZMrqAKf2KdEwCgYIKoZIzj0EAwIwPjEfMB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEbMBkGA1UEAxMSemFwLXRlc3RuZXQzLWxuZC0wMB4XDTE5MDcxOTA3MTc1NFoXDTIwMDkxMjA3MTc1NFowPjEfMB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEbMBkGA1UEAxMSemFwLXRlc3RuZXQzLWxuZC0wMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9Bi6HsNuGeCvKZ_xxLlLRYCYXyk4F03galuUGEoCjYI-eZiEK_BqYgSanT2_d1NwYTD99pEW1mBohR6d0RvQU6OBmzCBmDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH_BAUwAwEB_zB1BgNVHREEbjBsghJ6YXAtdGVzdG5ldDMtbG5kLTCCCWxvY2FsaG9zdIIVdGVzdG5ldDMtbG5kLnphcGhxLmlvggR1bml4ggp1bml4cGFja2V0hwR_AAABhxAAAAAAAAAAAAAAAAAAAAABhwQKNAY6hwQiSfzkMAoGCCqGSM49BAMCA0gAMEUCIQD3I0-2f-qEHUcRM4S3VW-fGsVmK-TD__vxh_RIu15IEwIgLAMGoJeCSNTm138yyxizzrUMEzNA21JAErtmXWIQ_64&macaroon=AgEDbG5kAooBAwoQ_cUpFGKqF7-wbBS89_e-2RIBMBoPCgdhZGRyZXNzEgRyZWFkGgwKBGluZm8SBHJlYWQaEAoIaW52b2ljZXMSBHJlYWQaDwoHbWVzc2FnZRIEcmVhZBoQCghvZmZjaGFpbhIEcmVhZBoPCgdvbmNoYWluEgRyZWFkGg0KBXBlZXJzEgRyZWFkAAAGIDRVevU1fYw4fgaQdm2fdOjjL_ATSriujUV4PJVpqPLr'
+
 const grpcOptions = { host, cert, macaroon }
 
 test('initialize', t => {
@@ -31,13 +34,35 @@ test('initialize', t => {
   t.true(grpc.services.WalletKit, `should have WalletKit service`)
 })
 
-test('lndconnect', t => {
+test('constructor (paths)', t => {
+  t.plan(3)
+  const grpc = new LndGrpc(grpcOptions)
+  t.equal(grpc.options.host, host, 'should extract the host')
+  t.equal(grpc.options.cert, cert, 'should extract the cert')
+  t.equal(grpc.options.macaroon, macaroon, 'should extract the macaroon')
+})
+
+test('constructor (lndconnect)', t => {
   t.plan(3)
   const lndconnectUri = `lndconnect://${host}?cert=${cert}&macaroon=${macaroon}`
   const grpc = new LndGrpc({ lndconnectUri })
   t.equal(grpc.options.host, host, 'should extract the host')
   t.equal(grpc.options.cert, cert, 'should extract the cert')
   t.equal(grpc.options.macaroon, macaroon, 'should extract the macaroon')
+})
+
+test('connect (paths)', async t => {
+  t.plan(1)
+  const grpc = new LndGrpc(grpcOptions)
+  await grpc.connect()
+  t.equal(grpc.state, 'active', 'should connect')
+})
+
+test('connect (lndconnect)', async t => {
+  t.plan(1)
+  const grpc = new LndGrpc({ lndconnectUri: lndconenctString })
+  await grpc.connect()
+  t.equal(grpc.state, 'active', 'should connect')
 })
 
 test('ready -> connect (locked)', async t => {

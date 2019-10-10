@@ -2,7 +2,7 @@ import fs from 'fs'
 import { promisify } from 'util'
 import { basename } from 'path'
 import untildify from 'untildify'
-import lndconnect from 'lndconnect'
+import decodeCert from 'lndconnect/decodeCert'
 import { credentials } from '@grpc/grpc-js'
 
 const readFile = promisify(fs.readFile)
@@ -21,7 +21,7 @@ const createSslCreds = async certPath => {
     }
     // If it's not a filepath, then assume it is a base64url encoded string.
     else if (certPath === basename(certPath)) {
-      lndCert = lndconnect.decodeCert(certPath)
+      lndCert = decodeCert(certPath)
       lndCert = new Buffer.from(lndCert)
     }
     // Otherwise, lets treat it as a file path.
