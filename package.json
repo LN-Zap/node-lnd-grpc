@@ -1,6 +1,6 @@
 {
   "name": "lnd-grpc",
-  "version": "0.3.4-beta.1",
+  "version": "0.3.4-beta.2",
   "description": "Repository of lnd rpc protocol files and utilities for working with them",
   "main": "./dist/index.js",
   "engines": {
@@ -67,7 +67,7 @@
     "tape-promise": "4.0.0"
   },
   "dependencies": {
-    "@ln-zap/grpc-js": "^0.6.9",
+    "@ln-zap/grpc-js": "0.6.9",
     "@ln-zap/proto-loader": "0.5.1",
     "debug": "4.1.1",
     "javascript-state-machine": "3.1.0",
