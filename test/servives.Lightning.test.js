@@ -34,7 +34,7 @@ test('Lightning.invoices', async t => {
     await grpc.services.Lightning.addInvoice({ value: 100 })
     await promise
   } catch (e) {
-    t.equal(e.message, 'permission denied', 'should not allow creating an invoice with a readonly macaroon')
+    t.equal(e.details, 'permission denied', 'should not allow creating an invoice with a readonly macaroon')
   }
   call && call.cancel()
   await grpc.disconnect()

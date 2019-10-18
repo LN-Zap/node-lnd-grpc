@@ -9,7 +9,6 @@ import {
   validateHost,
   onInvalidTransition,
   onPendingTransition,
-  PROBE_TIMEOUT,
   WALLET_STATE_LOCKED,
   WALLET_STATE_ACTIVE,
 } from './utils'
@@ -221,7 +220,7 @@ class LndGrpc extends EventEmitter {
       await this.services.WalletUnlocker.connect()
       // Call the unlockWallet method with a missing password argument.
       // This is a way of probing the api to determine it's state.
-      await this.services.WalletUnlocker.unlockWallet({}, { deadline: getDeadline(PROBE_TIMEOUT) })
+      await this.services.WalletUnlocker.unlockWallet()
     } catch (error) {
       switch (error.code) {
         /*

@@ -1,4 +1,5 @@
-import { getClosestProtoVersion, getLatestProtoVersion, getDeadline, PROBE_TIMEOUT } from '../utils'
+import { status } from '@grpc/grpc-js'
+import { getClosestProtoVersion, getLatestProtoVersion } from '../utils'
 import Service from '../service'
 
 /**
@@ -20,8 +21,9 @@ class Lightning extends Service {
     // Establish a connection, as normal.
     await this.establishConnection()
 
-    // Once connected, make a call to getInfo in order to determine the api version.
-    const info = await this.getInfo({}, { deadline: getDeadline(PROBE_TIMEOUT) })
+    // Try to make a call to ensure that the connection is usable.
+    // We call to getInfo in order to determine the api version.
+    const info = await this.waitForCall('getInfo', {})
     this.debug('Connected to Lightning gRPC: %O', info)
 
     // Determine most relevant proto version based on the api info.

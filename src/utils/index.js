@@ -1,5 +1,6 @@
 export createMacaroonCreds from './createMacaroonCreds'
 export createSslCreds from './createSslCreds'
+export delay from './delay'
 export getDeadline from './getDeadline'
 export grpcOptions from './grpcOptions'
 export grpcSslCipherSuites from './grpcSslCipherSuites'
