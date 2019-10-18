@@ -1,3 +1,4 @@
+import { status } from 'grpc'
 import { promisifiedCall } from '../utils'
 import Service from '../service'
 

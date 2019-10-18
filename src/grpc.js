@@ -2,14 +2,14 @@ import EventEmitter from 'events'
 import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import parse from 'lndconnect/parse'
-import { status } from '@grpc/grpc-js'
+import { status } from 'grpc'
+import { tor } from './utils'
 import {
   getDeadline,
   grpcSslCipherSuites,
   validateHost,
   onInvalidTransition,
   onPendingTransition,
-  PROBE_TIMEOUT,
   WALLET_STATE_LOCKED,
   WALLET_STATE_ACTIVE,
 } from './utils'
@@ -64,6 +64,7 @@ class LndGrpc extends EventEmitter {
     // Define services.
     this.supportedServices = [WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit]
     this.services = {}
+    this.tor = null
 
     // Instantiate services.
     this.supportedServices.forEach(Service => {
@@ -96,6 +97,13 @@ class LndGrpc extends EventEmitter {
     const { host } = this.options
     await validateHost(host)
 
+    // Start tor service if needed.
+    const [lndHost] = host.split(':')
+    if (lndHost.endsWith('.onion')) {
+      this.tor = tor()
+      await this.tor.start()
+    }
+
     // Probe the services to determine the wallet state.
     const walletState = await this.determineWalletState()
 
@@ -127,8 +135,11 @@ class LndGrpc extends EventEmitter {
   }
 
   async disconnect(...args) {
-    await this.fsm.disconnect(...args)
-    this.emit('disconnected')
+    if (this.can('disconnect')) {
+      await this.fsm.disconnect(...args)
+      this.emit('disconnected')
+    }
+    this.tor && (await this.tor.stop())
   }
 
   // ------------------------------------
@@ -221,7 +232,7 @@ class LndGrpc extends EventEmitter {
       await this.services.WalletUnlocker.connect()
       // Call the unlockWallet method with a missing password argument.
       // This is a way of probing the api to determine it's state.
-      await this.services.WalletUnlocker.unlockWallet({}, { deadline: getDeadline(PROBE_TIMEOUT) })
+      await this.services.WalletUnlocker.unlockWallet()
     } catch (error) {
       switch (error.code) {
         /*

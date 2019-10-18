@@ -4,9 +4,9 @@
 // new StateMachine({ ... methods: [ ..., onPendingTransition, onInvalidTransition ] })
 
 export const onPendingTransition = (transition, from, to) => {
-  throw Object.assign(new Error('transition already in progress'), { transition, from, to });
-};
+  throw Object.assign(new Error('transition already in progress'), { transition, from, to })
+}
 
 export const onInvalidTransition = (transition, from, to) => {
-  throw Object.assign(new Error('transition is invalid in current state'), { transition, from, to });
-};
+  throw Object.assign(new Error('transition is invalid in current state'), { transition, from, to })
+}

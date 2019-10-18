@@ -21,6 +21,10 @@ const validateHost = async host => {
   try {
     const [lndHost, lndPort] = host.split(':')
 
+    if (lndHost.endsWith('.onion')) {
+      return true
+    }
+
     // If the hostname starts with a number, ensure that it is a valid IP address.
     if (!isFQDN(lndHost, { require_tld: false }) && !isIP(lndHost)) {
       return createError(`${lndHost} is not a valid IP address or hostname`, 'LND_GRPC_HOST_ERROR')

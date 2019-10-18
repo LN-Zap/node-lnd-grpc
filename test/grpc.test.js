@@ -3,16 +3,10 @@ import test from 'tape-promise/tape'
 import sinon from 'sinon'
 import { join } from 'path'
 import LndGrpc from '../src'
+import { onion } from '../src/utils'
+import { remoteHost } from './helpers/grpc'
 
-const hostname = 'testnet3'
-
-const host = `${hostname}-lnd.zaphq.io:10009`
-const cert = join(__dirname, `fixtures/${hostname}`, 'tls.cert')
-const macaroon = join(__dirname, `fixtures/${hostname}`, 'readonly.macaroon')
-
-const lndconenctString =
-  'lndconnect://testnet3-lnd.zaphq.io:10009?cert=MIICFzCCAb2gAwIBAgIRAIDeyONMGAAGZMrqAKf2KdEwCgYIKoZIzj0EAwIwPjEfMB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEbMBkGA1UEAxMSemFwLXRlc3RuZXQzLWxuZC0wMB4XDTE5MDcxOTA3MTc1NFoXDTIwMDkxMjA3MTc1NFowPjEfMB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEbMBkGA1UEAxMSemFwLXRlc3RuZXQzLWxuZC0wMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9Bi6HsNuGeCvKZ_xxLlLRYCYXyk4F03galuUGEoCjYI-eZiEK_BqYgSanT2_d1NwYTD99pEW1mBohR6d0RvQU6OBmzCBmDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH_BAUwAwEB_zB1BgNVHREEbjBsghJ6YXAtdGVzdG5ldDMtbG5kLTCCCWxvY2FsaG9zdIIVdGVzdG5ldDMtbG5kLnphcGhxLmlvggR1bml4ggp1bml4cGFja2V0hwR_AAABhxAAAAAAAAAAAAAAAAAAAAABhwQKNAY6hwQiSfzkMAoGCCqGSM49BAMCA0gAMEUCIQD3I0-2f-qEHUcRM4S3VW-fGsVmK-TD__vxh_RIu15IEwIgLAMGoJeCSNTm138yyxizzrUMEzNA21JAErtmXWIQ_64&macaroon=AgEDbG5kAooBAwoQ_cUpFGKqF7-wbBS89_e-2RIBMBoPCgdhZGRyZXNzEgRyZWFkGgwKBGluZm8SBHJlYWQaEAoIaW52b2ljZXMSBHJlYWQaDwoHbWVzc2FnZRIEcmVhZBoQCghvZmZjaGFpbhIEcmVhZBoPCgdvbmNoYWluEgRyZWFkGg0KBXBlZXJzEgRyZWFkAAAGIDRVevU1fYw4fgaQdm2fdOjjL_ATSriujUV4PJVpqPLr'
-
+const { host, cert, macaroon, lndconenctString } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 test('initialize', t => {
@@ -56,6 +50,7 @@ test('connect (paths)', async t => {
   const grpc = new LndGrpc(grpcOptions)
   await grpc.connect()
   t.equal(grpc.state, 'active', 'should connect')
+  await grpc.disconnect()
 })
 
 test('connect (lndconnect)', async t => {
@@ -63,6 +58,7 @@ test('connect (lndconnect)', async t => {
   const grpc = new LndGrpc({ lndconnectUri: lndconenctString })
   await grpc.connect()
   t.equal(grpc.state, 'active', 'should connect')
+  await grpc.disconnect()
 })
 
 test('ready -> connect (locked)', async t => {
@@ -72,6 +68,7 @@ test('ready -> connect (locked)', async t => {
   const stub = sinon.stub(grpc.fsm, 'activateWalletUnlocker')
   await grpc.connect()
   t.true(stub.called, 'should activate wallet unlocker')
+  await grpc.disconnect()
 })
 
 test('ready -> connect (active)', async t => {
@@ -81,6 +78,7 @@ test('ready -> connect (active)', async t => {
   const stub = sinon.stub(grpc.fsm, 'activateLightning')
   await grpc.connect()
   t.true(stub.called, 'should activate lightning')
+  await grpc.disconnect()
 })
 
 test('locked -> connect', async t => {
@@ -94,6 +92,7 @@ test('locked -> connect', async t => {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from locked state')
     t.ok(e.stack, 'error has stack')
   }
+  await grpc.disconnect()
 })
 
 test('active -> connect', async t => {
@@ -107,6 +106,7 @@ test('active -> connect', async t => {
     t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from active state')
     t.ok(e.stack, 'error has stack')
   }
+  await grpc.disconnect()
 })
 
 test('locked -> disconnect', async t => {
@@ -125,15 +125,4 @@ test('active -> disconnect', async t => {
   await grpc.connect()
   await grpc.disconnect()
   t.equal(grpc.state, 'ready', 'should switch to ready state')
-})
-
-test('ready -> disconnect', async t => {
-  t.plan(2)
-  try {
-    const grpc = new LndGrpc(grpcOptions)
-    await grpc.disconnect()
-  } catch (e) {
-    t.equal(e.message, 'transition is invalid in current state', 'should throw an error if called from ready state')
-    t.ok(e.stack, 'error has stack')
-  }
 })

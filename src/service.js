@@ -1,11 +1,12 @@
 import { join } from 'path'
 import EventEmitter from 'events'
 import defaultsDeep from 'lodash.defaultsdeep'
-import { credentials, loadPackageDefinition, status } from '@grpc/grpc-js'
+import { credentials, loadPackageDefinition, status, Metadata } from 'grpc'
 import { load } from '@ln-zap/proto-loader'
 import StateMachine from 'javascript-state-machine'
 import debug from 'debug'
 import {
+  delay,
   promisifiedCall,
   waitForFile,
   grpcOptions,
@@ -17,10 +18,11 @@ import {
   onInvalidTransition,
   promiseTimeout,
   onPendingTransition,
-  CONNECT_WAIT_TIMEOUT,
   FILE_WAIT_TIMEOUT,
   MAX_SESSION_MEMORY,
   SERVICE_CONNECT_TIMEOUT,
+  PROBE_TIMEOUT,
+  PROBE_RETRY_INTERVAL,
 } from './utils'
 import registry from './registry'
 
@@ -180,9 +182,6 @@ class Service extends EventEmitter {
       const rpcService = rpc[protoPackage][this.serviceName]
       this.service = new rpcService(host, creds)
 
-      // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
-
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)
     } catch (e) {
@@ -192,6 +191,34 @@ class Service extends EventEmitter {
       }
       throw e
     }
+  }
+
+  async waitForCall(method, args) {
+    this.debug(
+      'Attempting to call %s.%s with args %o (will keep trying to up to %s seconds)',
+      this.serviceName,
+      method,
+      args,
+      PROBE_TIMEOUT,
+    )
+    const deadline = getDeadline(PROBE_TIMEOUT)
+    const checkState = async err => {
+      let now = new Date().getTime()
+      const isExpired = now > deadline
+      if (err && isExpired) {
+        throw err
+      }
+      try {
+        return await this[method](args)
+      } catch (error) {
+        if (error.code === status.UNAVAILABLE) {
+          await delay(PROBE_RETRY_INTERVAL)
+          return checkState(error)
+        }
+        throw error
+      }
+    }
+    return await checkState()
   }
 
   /**

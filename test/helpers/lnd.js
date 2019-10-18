@@ -22,7 +22,7 @@ export const spawnLnd = (options = {}) => {
     '--bitcoin.active',
     '--bitcoin.testnet',
     '--bitcoin.node=neutrino',
-    '--neutrino.connect=testnet3-btcd.zaphq.io',
+    '--neutrino.connect=testnet4-btcd.zaphq.io',
     // '--noseedbackup',
     // '--notls=1',
   ])
