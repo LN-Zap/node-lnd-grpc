@@ -1,4 +1,4 @@
-import { status } from '@grpc/grpc-js'
+import { status } from '@ln-zap/grpc-js'
 import { promisifiedCall } from '../utils'
 import Service from '../service'
 

@@ -3,7 +3,7 @@ import { promisify } from 'util'
 import { basename } from 'path'
 import untildify from 'untildify'
 import decodeMacaroon from 'lndconnect/decodeMacaroon'
-import { credentials, Metadata } from '@grpc/grpc-js'
+import { credentials, Metadata } from '@ln-zap/grpc-js'
 
 const readFile = promisify(fs.readFile)
 

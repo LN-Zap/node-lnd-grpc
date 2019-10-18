@@ -1,6 +1,6 @@
 import test from 'tape-promise/tape'
 import { join } from 'path'
-import { status } from '@grpc/grpc-js'
+import { status } from '@ln-zap/grpc-js'
 import LndGrpc from '../src'
 
 const hostname = 'testnet3'

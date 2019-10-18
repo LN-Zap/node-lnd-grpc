@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import parse from 'lndconnect/parse'
-import { status } from '@grpc/grpc-js'
+import { status } from '@ln-zap/grpc-js'
 import {
   getDeadline,
   grpcSslCipherSuites,
