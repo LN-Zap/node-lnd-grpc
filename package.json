@@ -60,7 +60,7 @@
     "prettier-eslint-cli": "5.0.0",
     "rimraf": "3.0.0",
     "sinon": "7.5.0",
-    "source-map-support": "0.5.13",
+    "source-map-support": "0.5.16",
     "split2": "3.1.1",
     "tap-spec": "5.0.0",
     "tape": "4.11.0",
