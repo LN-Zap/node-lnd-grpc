@@ -54,7 +54,7 @@
     "cross-env": "6.0.3",
     "eslint": "6.6.0",
     "eslint-config-prettier": "6.2.0",
-    "lnd-binary": "0.3.13",
+    "lnd-binary": "0.3.14",
     "prettier": "1.18.2",
     "prettier-eslint": "9.0.0",
     "prettier-eslint-cli": "5.0.0",
