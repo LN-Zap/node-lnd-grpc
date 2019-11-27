@@ -50,7 +50,7 @@
     "babel-plugin-add-module-exports": "1.0.2",
     "babel-plugin-source-map-support": "2.1.1",
     "babel-tape-runner": "3.0.0",
-    "core-js": "3.3.6",
+    "core-js": "3.4.4",
     "cross-env": "6.0.3",
     "eslint": "6.6.0",
     "eslint-config-prettier": "6.2.0",
