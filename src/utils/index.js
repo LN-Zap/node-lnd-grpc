@@ -1,4 +1,4 @@
-export createMacaroonCreds from './createMacaroonCreds'
+export createMacaroonCreds, { getMacaroon } from './createMacaroonCreds'
 export createSslCreds from './createSslCreds'
 export getDeadline from './getDeadline'
 export grpcOptions from './grpcOptions'
