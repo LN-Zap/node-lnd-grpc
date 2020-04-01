@@ -53,9 +53,14 @@ const v8Services = [
   },
 ]
 
+const v9Services = [...v8Services]
+
 export default {
+  '0.9.0-beta': {
+    services: v9Services,
+  },
   '0.8.0-beta': {
-    services: v7Services,
+    services: v8Services,
   },
   '0.7.1-beta': {
     services: v7Services,

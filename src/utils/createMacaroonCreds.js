@@ -4,16 +4,16 @@ import { basename } from 'path'
 import untildify from 'untildify'
 import decodeMacaroon from 'lndconnect/decodeMacaroon'
 import { credentials, Metadata } from '@grpc/grpc-js'
+import base64url from 'base64url'
 
 const readFile = promisify(fs.readFile)
 
 /**
- * Validates and creates the macaroon authorization credentials from the specified file path
+ * Extract macaroon hex from various sources.
  * @param {String} macaroonPath
- * @returns {grpc.CallCredentials}
+ * @returns {String} Hex encoded macaroon.
  */
-const createMacaroonCreds = async macaroonPath => {
-  const metadata = new Metadata()
+export const getMacaroon = async macaroonPath => {
   let lndMacaroon
 
   if (macaroonPath) {
@@ -35,8 +35,22 @@ const createMacaroonCreds = async macaroonPath => {
       })
       lndMacaroon = macaroon.toString('hex')
     }
-    metadata.add('macaroon', lndMacaroon)
   }
+
+  return lndMacaroon
+}
+
+/**
+ * Validates and creates the macaroon authorization credentials from the specified file path
+ * @param {String} macaroonPath
+ * @returns {grpc.CallCredentials}
+ */
+const createMacaroonCreds = async macaroonPath => {
+  let lndMacaroon = await getMacaroon(macaroonPath)
+
+  const metadata = new Metadata()
+  metadata.add('macaroon', lndMacaroon)
+
   return credentials.createFromMetadataGenerator((params, callback) => callback(null, metadata))
 }
 

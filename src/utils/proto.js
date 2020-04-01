@@ -12,7 +12,7 @@ const readFile = promisify(fs.readFile)
 const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2-beta'
-export const GRPC_HIGHEST_STABLE_VERSION = '0.8.0-beta'
+export const GRPC_HIGHEST_STABLE_VERSION = '0.9.0-beta'
 
 /**
  * Get the directory where rpc.proto files are stored.
