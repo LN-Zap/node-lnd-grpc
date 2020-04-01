@@ -3,7 +3,7 @@ import { promisify } from 'util'
 import { basename } from 'path'
 import untildify from 'untildify'
 import decodeCert from 'lndconnect/decodeCert'
-import { credentials } from '@ln-zap/grpc-js'
+import { credentials } from '@grpc/grpc-js'
 
 const readFile = promisify(fs.readFile)
 
