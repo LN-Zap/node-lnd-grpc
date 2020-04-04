@@ -208,6 +208,7 @@ class LndGrpc extends EventEmitter {
         }
       }),
     )
+    debug('Disconnected from all gRPC services')
   }
 
   /**
