@@ -23,6 +23,7 @@ import {
   SERVICE_CONNECT_TIMEOUT,
   PROBE_TIMEOUT,
   PROBE_RETRY_INTERVAL,
+  CONNECT_WAIT_TIMEOUT,
 } from './utils'
 import registry from './registry'
 
@@ -181,6 +182,9 @@ class Service extends EventEmitter {
       // Create a new gRPC client instance.
       const rpcService = rpc[protoPackage][this.serviceName]
       this.service = new rpcService(host, creds)
+
+      // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)
