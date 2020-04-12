@@ -21,8 +21,8 @@ test('Lightning.invoices', async t => {
 
   t.equal(
     call.constructor.name,
-    'ClientReadableStreamImpl',
-    'Lightning.subscribeInvoices() should return a ClientReadableStreamImpl instance',
+    'ClientReadableStream',
+    'Lightning.subscribeInvoices() should return a ClientReadableStream instance',
   )
 
   // Add invoice stream listeners.
