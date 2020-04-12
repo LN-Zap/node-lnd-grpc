@@ -41,15 +41,19 @@ export const spawnLnd = (options = {}) => {
 }
 
 export const killLnd = async (lndProcess, options = {}) => {
-  return new Promise((resolve, reject) => {
+  if (!lndProcess || !lndProcess.pid) {
+    return
+  }
+  const waitForExit = new Promise((resolve, reject) => {
     lndProcess.on('exit', () => {
       if (options.cleanLndDir && lndDir) {
         rimraf.sync(lndDir)
       }
       resolve()
     })
-    lndProcess.kill('SIGKILL')
   })
+  lndProcess.kill('SIGKILL')
+  return waitForExit
 }
 
 export const host = 'localhost:10009'

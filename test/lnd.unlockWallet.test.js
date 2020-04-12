@@ -36,20 +36,18 @@ test('unlockWallet:test', async t => {
           t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
         })
       } catch (e) {
-        console.error(e)
+        await grpc.disconnect()
+        await killLnd(lndProcess, { cleanLndDir: true })
         t.fail(e)
       }
     })
   } catch (e) {
-    console.error(e)
     t.fail(e)
   }
 })
 
 test('unlockWallet:teardown', async t => {
-  if (grpc.can('disconnect')) {
-    await grpc.disconnect()
-  }
+  await grpc.disconnect()
   await killLnd(lndProcess, { cleanLndDir: true })
   t.end()
 })
