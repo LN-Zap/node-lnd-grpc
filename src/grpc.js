@@ -12,7 +12,17 @@ import {
   WALLET_STATE_LOCKED,
   WALLET_STATE_ACTIVE,
 } from './utils'
-import { WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit } from './services'
+import {
+  WalletUnlocker,
+  Lightning,
+  Autopilot,
+  ChainNotifier,
+  Invoices,
+  Router,
+  Signer,
+  Versioner,
+  WalletKit,
+} from './services'
 import registry from './registry'
 
 const debug = createDebug('lnrpc:grpc')
@@ -61,7 +71,17 @@ class LndGrpc extends EventEmitter {
     })
 
     // Define services.
-    this.supportedServices = [WalletUnlocker, Lightning, Autopilot, ChainNotifier, Invoices, Router, Signer, WalletKit]
+    this.supportedServices = [
+      WalletUnlocker,
+      Lightning,
+      Autopilot,
+      ChainNotifier,
+      Invoices,
+      Router,
+      Signer,
+      Versioner,
+      WalletKit,
+    ]
     this.services = {}
 
     // Instantiate services.

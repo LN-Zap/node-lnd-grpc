@@ -55,7 +55,18 @@ const v8Services = [
 
 const v9Services = [...v8Services]
 
+const v10Services = [
+  ...v9Services,
+  {
+    name: 'Versioner',
+    proto: 'verrpc/verrpc.proto',
+  },
+]
+
 export default {
+  '0.10.0-beta': {
+    services: v10Services,
+  },
   '0.9.0-beta': {
     services: v9Services,
   },
