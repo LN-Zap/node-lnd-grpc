@@ -19,7 +19,6 @@ import {
   promiseTimeout,
   onPendingTransition,
   FILE_WAIT_TIMEOUT,
-  MAX_SESSION_MEMORY,
   SERVICE_CONNECT_TIMEOUT,
   PROBE_TIMEOUT,
   PROBE_RETRY_INTERVAL,
@@ -29,7 +28,11 @@ import registry from './registry'
 
 const DEFAULT_OPTIONS = {
   grpcOptions,
-  connectionOptions: { maxSessionMemory: MAX_SESSION_MEMORY },
+  // Disable message size size enforcement.
+  connectionOptions: {
+    'grpc.max_send_message_length': -1,
+    'grpc.max_receive_message_length': -1,
+  },
 }
 
 /**
