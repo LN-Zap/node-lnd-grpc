@@ -176,12 +176,9 @@ class Service extends EventEmitter {
         creds = credentials.combineChannelCredentials(creds, macaroonCreds)
       }
 
-      // Set custom connection options.
-      defaultsDeep(creds.connectionOptions, connectionOptions)
-
       // Create a new gRPC client instance.
       const rpcService = rpc[protoPackage][this.serviceName]
-      this.service = new rpcService(host, creds)
+      this.service = new rpcService(host, creds, connectionOptions)
 
       // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
       await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
