@@ -1,5 +1,4 @@
 import test from 'tape-promise/tape'
-import sinon from 'sinon'
 import LndGrpc from '../src'
 import { remoteHost } from './helpers/grpc'
 
@@ -7,7 +6,6 @@ const { host, cert, macaroon, lndconenctString } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 test('connect (paths)', async t => {
-  sinon.restore()
   t.plan(1)
   const grpc = new LndGrpc(grpcOptions)
   try {
@@ -20,8 +18,7 @@ test('connect (paths)', async t => {
   }
 })
 
-test.skip('connect (lndconnect)', async t => {
-  sinon.restore()
+test('connect (lndconnect)', async t => {
   t.plan(1)
   const grpc = new LndGrpc({ lndconnectUri: lndconenctString })
   try {
