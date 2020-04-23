@@ -1,15 +1,9 @@
-import fs from 'fs'
-import { promisify } from 'util'
-import { basename, dirname, join, normalize } from 'path'
+import { join } from 'path'
 import semver from 'semver'
 import createDebug from 'debug'
 import registry from '../registry'
 
 const debug = createDebug('lnrpc:proto')
-
-const fsReaddir = promisify(fs.readdir)
-const readFile = promisify(fs.readFile)
-const stat = promisify(fs.stat)
 
 export const GRPC_LOWEST_VERSION = '0.4.2-beta'
 export const GRPC_HIGHEST_STABLE_VERSION = '0.10.0-beta'

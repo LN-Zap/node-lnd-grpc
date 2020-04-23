@@ -1,10 +1,9 @@
 import test from 'tape-promise/tape'
-import { join } from 'path'
 import { status } from '@grpc/grpc-js'
 import { remoteHost } from './helpers/grpc'
 import LndGrpc from '../src'
 
-const { host, cert, macaroon, lndconenctString } = remoteHost
+const { host, cert, macaroon } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 let grpc
@@ -21,8 +20,8 @@ test('Lightning.invoices', async t => {
 
   t.equal(
     call.constructor.name,
-    'ClientReadableStream',
-    'Lightning.subscribeInvoices() should return a ClientReadableStream instance',
+    'ClientReadableStreamImpl',
+    'Lightning.subscribeInvoices() should return a ClientReadableStreamImpl instance',
   )
 
   // Add invoice stream listeners.

@@ -1,6 +1,5 @@
 'use strict'
 
-import path from 'path'
 import semver from 'semver'
 import test from 'tape-promise/tape'
 import {
