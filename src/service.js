@@ -98,7 +98,7 @@ class Service extends EventEmitter {
    */
   async onBeforeConnect(lifecycle, options) {
     this.debug(`Connecting to ${this.serviceName} gRPC service`)
-    await promiseTimeout(SERVICE_CONNECT_TIMEOUT, this.establishConnection(options), 'Connection timeout out.')
+    await promiseTimeout(SERVICE_CONNECT_TIMEOUT * 1000, this.establishConnection(options), 'Connection timeout out.')
   }
 
   /**
