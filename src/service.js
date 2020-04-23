@@ -166,7 +166,6 @@ class Service extends EventEmitter {
       if (waitForCert) {
         const waitTime = Number.isFinite(waitForCert) ? waitForCert : FILE_WAIT_TIMEOUT
         await waitForFile(cert, waitTime)
-        await delay(250)
       }
 
       // Create ssl credentials to use with the gRPC client.
@@ -178,7 +177,6 @@ class Service extends EventEmitter {
         if (waitForMacaroon) {
           const waitTime = Number.isFinite(waitForMacaroon) ? waitForMacaroon : FILE_WAIT_TIMEOUT
           await waitForFile(macaroon, waitTime)
-          await delay(250)
         }
         const macaroonCreds = await createMacaroonCreds(macaroon)
         creds = credentials.combineChannelCredentials(creds, macaroonCreds)
