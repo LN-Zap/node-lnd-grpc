@@ -3,9 +3,6 @@ osx_image: xcode11
 os:
   - linux
   - osx
-env:
-  - TOR=false
-  - TOR=true
 language: node_js
 node_js: '12'
 cache:
@@ -20,3 +17,5 @@ addons:
 install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sudo apt-get install tor; fi
   - npm ci
+script:
+  - npm run test && npm run test-tor
