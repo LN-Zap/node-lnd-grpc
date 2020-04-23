@@ -3,6 +3,7 @@ import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import parse from 'lndconnect/parse'
 import { status } from '@grpc/grpc-js'
+import { tor } from './utils'
 import {
   getDeadline,
   grpcSslCipherSuites,
@@ -83,6 +84,7 @@ class LndGrpc extends EventEmitter {
       WalletKit,
     ]
     this.services = {}
+    this.tor = tor()
 
     // Instantiate services.
     this.supportedServices.forEach(Service => {
@@ -115,6 +117,12 @@ class LndGrpc extends EventEmitter {
     const { host } = this.options
     await validateHost(host)
 
+    // Start tor service if needed.
+    const [lndHost] = host.split(':')
+    if (lndHost.endsWith('.onion') && !this.tor.isStarted()) {
+      await this.tor.start()
+    }
+
     // Probe the services to determine the wallet state.
     const walletState = await this.determineWalletState()
 
@@ -146,7 +154,10 @@ class LndGrpc extends EventEmitter {
   }
 
   async disconnect(...args) {
-    await this.fsm.disconnect(...args)
+    if (this.can('disconnect')) {
+      await this.fsm.disconnect(...args)
+    }
+    await this.tor.stop()
     this.emit('disconnected')
   }
 

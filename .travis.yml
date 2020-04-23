@@ -1,7 +1,21 @@
-language: node_js
-node_js:
-  - node
-  - lts/*
+dist: bionic
+osx_image: xcode11
 os:
   - linux
   - osx
+language: node_js
+node_js: '12'
+cache:
+  apt: true
+  yarn: true
+  brew: true
+  npm: false
+addons:
+  homebrew:
+    packages:
+      - tor
+install:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sudo apt-get install tor; fi
+  - npm ci
+script:
+  - npm run test && npm run test-tor

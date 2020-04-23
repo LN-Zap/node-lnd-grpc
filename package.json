@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "DEBUG=lnrpc* babel-tape-runner test/*.js | tap-spec",
+    "test-tor": "DEBUG=lnrpc* TOR=true babel-tape-runner test/grpc.test.js | tap-spec",
     "lint": "prettier-eslint --write \"$PWD/**/*.{js,json,md}\"",
     "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir dist",
     "clean": "rimraf -r ./dist",
@@ -67,9 +68,10 @@
     "tape-promise": "4.0.0"
   },
   "dependencies": {
-    "@grpc/grpc-js": "1.0.0",
+    "@grpc/grpc-js": "1.0.2",
     "@ln-zap/proto-loader": "0.5.4",
     "debug": "4.1.1",
+    "get-port": "5.0.0",
     "javascript-state-machine": "3.1.0",
     "lndconnect": "0.2.10",
     "lodash.defaultsdeep": "4.6.1",

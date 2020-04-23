@@ -4,7 +4,6 @@ import { basename } from 'path'
 import untildify from 'untildify'
 import decodeMacaroon from 'lndconnect/decodeMacaroon'
 import { credentials, Metadata } from '@grpc/grpc-js'
-import base64url from 'base64url'
 
 const readFile = promisify(fs.readFile)
 

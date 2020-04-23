@@ -1,10 +1,9 @@
 import test from 'tape-promise/tape'
-import { join } from 'path'
 import { status } from '@grpc/grpc-js'
 import { remoteHost } from './helpers/grpc'
 import LndGrpc from '../src'
 
-const { host, cert, macaroon, lndconenctString } = remoteHost
+const { host, cert, macaroon } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 let grpc
