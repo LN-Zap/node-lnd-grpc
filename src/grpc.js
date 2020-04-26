@@ -120,7 +120,9 @@ class LndGrpc extends EventEmitter {
     // Start tor service if needed.
     const [lndHost] = host.split(':')
     if (lndHost.endsWith('.onion') && !this.tor.isStarted()) {
+      this.emit('tor.starting')
       await this.tor.start()
+      this.emit('tor.started')
     }
 
     // Probe the services to determine the wallet state.
@@ -157,7 +159,11 @@ class LndGrpc extends EventEmitter {
     if (this.can('disconnect')) {
       await this.fsm.disconnect(...args)
     }
-    await this.tor.stop()
+    if (this.tor.isStarted()) {
+      this.emit('tor.stopping')
+      await this.tor.stop()
+      this.emit('tor.stopped')
+    }
     this.emit('disconnected')
   }
 

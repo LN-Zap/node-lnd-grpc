@@ -84,8 +84,9 @@ export default function tor({ cwd } = {}) {
 
       const waitForExit = new Promise((resolve, reject) => {
         proc.on('exit', () => {
-          resolve()
+          debug('Stopped tor with pid: %o', proc.pid)
           delete process.env.grpc_proxy
+          resolve()
         })
       })
 
