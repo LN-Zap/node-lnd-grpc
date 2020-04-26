@@ -6,12 +6,13 @@ const { host, cert, macaroon, lndconenctString } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 test('connect (paths)', async t => {
-  t.plan(1)
+  t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
   try {
     await grpc.connect()
     t.equal(grpc.state, 'active', 'should connect')
     await grpc.disconnect()
+    t.equal(grpc.state, 'ready', 'should disconnect')
   } catch (e) {
     await grpc.disconnect()
     t.fail(e)
@@ -19,12 +20,13 @@ test('connect (paths)', async t => {
 })
 
 test('connect (lndconnect)', async t => {
-  t.plan(1)
+  t.plan(2)
   const grpc = new LndGrpc({ lndconnectUri: lndconenctString })
   try {
     await grpc.connect()
     t.equal(grpc.state, 'active', 'should connect')
     await grpc.disconnect()
+    t.equal(grpc.state, 'ready', 'should disconnect')
   } catch (e) {
     await grpc.disconnect()
     t.fail(e)
