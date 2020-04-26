@@ -85,7 +85,7 @@ export default function tor({ cwd } = {}) {
       const waitForExit = new Promise((resolve, reject) => {
         proc.on('exit', () => {
           resolve()
-          delete process.env.http_proxy
+          delete process.env.grpc_proxy
         })
       })
 
