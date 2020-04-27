@@ -64,7 +64,7 @@
     "source-map-support": "0.5.16",
     "split2": "3.1.1",
     "tap-spec": "5.0.0",
-    "tape": "^4.13.2",
+    "tape": "^5.0.0",
     "tape-promise": "4.0.0"
   },
   "dependencies": {
