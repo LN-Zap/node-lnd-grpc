@@ -198,7 +198,12 @@ class LndGrpc extends EventEmitter {
    * Connect to and activate the main api.
    */
   async onBeforeActivateLightning() {
-    const { Lightning } = this.services
+    const { Lightning, WalletUnlocker } = this.services
+
+    // Disconnect wallet unlocker if its connected.
+    if (WalletUnlocker.can('disconnect')) {
+      await WalletUnlocker.disconnect()
+    }
 
     // First connect to the Lightning service.
     await Lightning.connect()
