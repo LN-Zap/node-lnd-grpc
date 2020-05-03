@@ -13,35 +13,29 @@ test('unlockWallet:setup', async t => {
 test('unlockWallet:test', async t => {
   t.plan(1)
   try {
+    // Create a new node.
     grpc = new LndGrpc(grpcOptions)
     await grpc.connect()
     await grpc.services.WalletUnlocker.initWallet({
       wallet_password: Buffer.from('password'),
       cipher_seed_mnemonic: seed,
     })
-    grpc.activateLightning()
-    grpc.once('active', async () => {
-      try {
-        await grpc.disconnect()
-        await killLnd(lndProcess)
-        lndProcess = await spawnLnd()
-        grpc = new LndGrpc(grpcOptions)
-        await grpc.connect()
+    await grpc.activateLightning()
+    await grpc.disconnect()
+    await killLnd(lndProcess)
 
-        await grpc.services.WalletUnlocker.unlockWallet({
-          wallet_password: Buffer.from('password'),
-        })
-        grpc.activateLightning()
-        grpc.once('active', async () => {
-          t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
-        })
-      } catch (e) {
-        await grpc.disconnect()
-        await killLnd(lndProcess, { cleanLndDir: true })
-        t.fail(e)
-      }
+    // Restart lnd and try to unlock it.
+    lndProcess = await spawnLnd()
+    grpc = new LndGrpc(grpcOptions)
+    await grpc.connect()
+    await grpc.services.WalletUnlocker.unlockWallet({
+      wallet_password: Buffer.from('password'),
     })
+    await grpc.activateLightning()
+    t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
   } catch (e) {
+    await grpc.disconnect()
+    await killLnd(lndProcess, { cleanLndDir: true })
     t.fail(e)
   }
 })

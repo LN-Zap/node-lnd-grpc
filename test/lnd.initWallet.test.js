@@ -19,10 +19,8 @@ test('initWallet:test', async t => {
       wallet_password: Buffer.from('password'),
       cipher_seed_mnemonic: seed,
     })
-    grpc.activateLightning()
-    grpc.once('active', async () => {
-      t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
-    })
+    await grpc.activateLightning()
+    t.equal(grpc.state, 'active', 'should emit "active" event and be in active state')
   } catch (e) {
     console.error(e)
     t.fail(e)
