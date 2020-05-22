@@ -15,6 +15,7 @@ import {
   createMacaroonCreds,
   getLatestProtoVersion,
   getProtoDir,
+  isTor,
   onInvalidTransition,
   promiseTimeout,
   onPendingTransition,
@@ -23,6 +24,7 @@ import {
   PROBE_TIMEOUT,
   PROBE_RETRY_INTERVAL,
   CONNECT_WAIT_TIMEOUT,
+  CONNECT_WAIT_TIMEOUT_TOR,
 } from './utils'
 import registry from './registry'
 
@@ -187,7 +189,8 @@ class Service extends EventEmitter {
       this.service = new rpcService(host, creds, connectionOptions)
 
       // Wait up to CONNECT_WAIT_TIMEOUT seconds for the gRPC connection to be established.
-      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(CONNECT_WAIT_TIMEOUT))
+      const timeeout = isTor(host) ? CONNECT_WAIT_TIMEOUT_TOR : CONNECT_WAIT_TIMEOUT
+      await promisifiedCall(this.service, this.service.waitForReady, getDeadline(timeeout))
 
       // Set up helper methods to proxy service methods.
       this.wrapAsync(rpcService.service)

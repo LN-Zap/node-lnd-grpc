@@ -9,7 +9,10 @@ export const PROBE_TIMEOUT = 20
 export const PROBE_RETRY_INTERVAL = 250
 
 // Time (in seconds) to wait for a grpc connection to be established.
-export const CONNECT_WAIT_TIMEOUT = 20
+export const CONNECT_WAIT_TIMEOUT = 10
+
+// Time (in seconds) to wait for a grpc connection to be established.
+export const CONNECT_WAIT_TIMEOUT_TOR = 25
 
 // Time (in seconds) to wait before aborting service connection attempts.
 export const SERVICE_CONNECT_TIMEOUT = 30

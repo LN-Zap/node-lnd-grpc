@@ -3,7 +3,7 @@ import StateMachine from 'javascript-state-machine'
 import createDebug from 'debug'
 import parse from 'lndconnect/parse'
 import { status } from '@grpc/grpc-js'
-import { tor } from './utils'
+import { tor, isTor } from './utils'
 import {
   getDeadline,
   grpcSslCipherSuites,
@@ -118,8 +118,7 @@ class LndGrpc extends EventEmitter {
     await validateHost(host)
 
     // Start tor service if needed.
-    const [lndHost] = host.split(':')
-    if (lndHost.endsWith('.onion') && !this.tor.isStarted()) {
+    if (isTor(host) && !this.tor.isStarted()) {
       this.emit('tor.starting')
       await this.tor.start()
       this.emit('tor.started')
