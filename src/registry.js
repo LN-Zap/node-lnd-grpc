@@ -64,6 +64,9 @@ const v10Services = [
 ]
 
 export default {
+  '0.10.1-beta': {
+    services: v10Services,
+  },
   '0.10.0-beta': {
     services: v10Services,
   },
