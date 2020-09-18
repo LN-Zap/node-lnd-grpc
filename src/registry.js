@@ -63,7 +63,24 @@ const v10Services = [
   },
 ]
 
+const v11Services = [
+  ...v10Services,
+  {
+    name: 'WalletUnlocker',
+    proto: 'lnrpc/walletunlocker.proto',
+  },
+]
+v11Services.map(service => {
+  if (service.name === 'WalletUnlocker') {
+    service.proto = 'lnrpc/walletunlocker.proto'
+  }
+  return service
+})
+
 export default {
+  '0.11.0-beta': {
+    services: v11Services,
+  },
   '0.10.1-beta': {
     services: v10Services,
   },
