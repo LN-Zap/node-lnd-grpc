@@ -12,7 +12,7 @@ const readFile = promisify(fs.readFile)
  * @param {String} macaroonPath
  * @returns {String} Hex encoded macaroon.
  */
-export const getMacaroon = async macaroonPath => {
+export const getMacaroon = async (macaroonPath) => {
   let lndMacaroon
 
   if (macaroonPath) {
@@ -27,7 +27,7 @@ export const getMacaroon = async macaroonPath => {
     }
     // Otherwise, treat it as a file path - load the file and convert to hex.
     else {
-      const macaroon = await readFile(untildify(macaroonPath)).catch(e => {
+      const macaroon = await readFile(untildify(macaroonPath)).catch((e) => {
         const error = new Error(`Macaroon path could not be accessed: ${e.message}`)
         error.code = 'LND_GRPC_MACAROON_ERROR'
         throw error
@@ -44,7 +44,7 @@ export const getMacaroon = async macaroonPath => {
  * @param {String} macaroonPath
  * @returns {grpc.CallCredentials}
  */
-const createMacaroonCreds = async macaroonPath => {
+const createMacaroonCreds = async (macaroonPath) => {
   let lndMacaroon = await getMacaroon(macaroonPath)
 
   const metadata = new Metadata()

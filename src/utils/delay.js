@@ -4,6 +4,6 @@
  * @param  {number} time Time (ms)
  * @returns {Promise} Promise that resolves after time ms
  */
-const delay = time => new Promise(resolve => setTimeout(() => resolve(), time))
+const delay = (time) => new Promise((resolve) => setTimeout(() => resolve(), time))
 
 export default delay

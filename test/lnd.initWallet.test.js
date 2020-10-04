@@ -5,12 +5,12 @@ import { spawnLnd, killLnd, grpcOptions, seed } from './helpers/lnd'
 let lndProcess
 let grpc
 
-test('initWallet:setup', async t => {
+test('initWallet:setup', async (t) => {
   lndProcess = await spawnLnd({ cleanLndDir: true })
   t.end()
 })
 
-test('initWallet:test', async t => {
+test('initWallet:test', async (t) => {
   t.plan(1)
   try {
     grpc = new LndGrpc(grpcOptions)
@@ -27,7 +27,7 @@ test('initWallet:test', async t => {
   }
 })
 
-test('initWallet:teardown', async t => {
+test('initWallet:teardown', async (t) => {
   if (grpc.can('disconnect')) {
     await grpc.disconnect()
   }

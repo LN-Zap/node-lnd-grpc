@@ -9,7 +9,7 @@ import {
   getClosestProtoVersion,
 } from '../src/utils/proto'
 
-test('getProtoVersions', async t => {
+test('getProtoVersions', async (t) => {
   t.plan(3)
   const res = await getProtoVersions()
   t.equal(typeof res, 'object', 'should return an array')
@@ -17,13 +17,13 @@ test('getProtoVersions', async t => {
   t.true(semver.valid(res[0]), 'should return valid semvers')
 })
 
-test('getLatestProtoVersion', async t => {
+test('getLatestProtoVersion', async (t) => {
   t.plan(1)
   const res = await getLatestProtoVersion()
   t.equal(res, GRPC_HIGHEST_STABLE_VERSION, 'should return the latest known proto version')
 })
 
-test('getClosestProtoVersion', async t => {
+test('getClosestProtoVersion', async (t) => {
   const expectations = [
     ['0.5.0-beta', '0.5.0-beta commit=v0.5-beta-101-g61e867741926bcb318432a6344b80161fabd1455'],
     ['0.5.1-beta', '0.5.1-beta commit=v0.5.1-beta'],
@@ -50,7 +50,7 @@ test('getClosestProtoVersion', async t => {
 
   t.plan(expectations.length)
 
-  expectations.map(async tuple => {
+  expectations.map(async (tuple) => {
     const expectation = tuple[0]
     const input = tuple[1]
     const res = await getClosestProtoVersion(input)

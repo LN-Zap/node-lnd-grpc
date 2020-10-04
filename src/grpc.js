@@ -87,7 +87,7 @@ class LndGrpc extends EventEmitter {
     this.tor = tor()
 
     // Instantiate services.
-    this.supportedServices.forEach(Service => {
+    this.supportedServices.forEach((Service) => {
       const instance = new Service(this.options)
       this.services[instance.serviceName] = instance
     })
@@ -212,15 +212,15 @@ class LndGrpc extends EventEmitter {
 
     // Get a list of all other available and supported services.
     const availableServices = registry[version].services
-      .map(s => s.name)
-      .filter(s => Object.keys(this.services).includes(s))
-      .filter(s => !['WalletUnlocker', 'Lightning'].includes(s))
+      .map((s) => s.name)
+      .filter((s) => Object.keys(this.services).includes(s))
+      .filter((s) => !['WalletUnlocker', 'Lightning'].includes(s))
 
     // Connect to the other services.
     await Promise.all(
       availableServices
-        .filter(serviceName => this.services[serviceName].can('connect'))
-        .map(serviceName => {
+        .filter((serviceName) => this.services[serviceName].can('connect'))
+        .map((serviceName) => {
           const service = this.services[serviceName]
           service.version = version
           // Disable waiting for cert/macaroon for sub-services.
@@ -242,7 +242,7 @@ class LndGrpc extends EventEmitter {
   async disconnectAll() {
     debug('Disconnecting from all gRPC services')
     await Promise.all(
-      Object.keys(this.services).map(serviceName => {
+      Object.keys(this.services).map((serviceName) => {
         const service = this.services[serviceName]
         if (service.can('disconnect')) {
           return service.disconnect()
@@ -318,7 +318,7 @@ class LndGrpc extends EventEmitter {
     /**
      * Promise that resolves when service is active.
      */
-    const isDone = new Promise(resolve => {
+    const isDone = new Promise((resolve) => {
       // If the service is already in the requested state, return immediately.
       if (this.fsm.state === stateName) {
         return resolve()

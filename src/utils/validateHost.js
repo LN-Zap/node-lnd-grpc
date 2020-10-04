@@ -11,7 +11,7 @@ const dnsLookup = promisify(dns.lookup)
  * @param {string} host A hostname + optional port in the format [hostname]:[port?]
  * @returns {Promise<Boolean>}
  */
-const validateHost = async host => {
+const validateHost = async (host) => {
   const createError = (msg, code) => {
     const error = new Error(msg)
     error.code = code

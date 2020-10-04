@@ -62,7 +62,7 @@ export default function tor({ cwd } = {}) {
     })
 
     return new Promise((resolve, reject) => {
-      proc.stdout.on('data', async data => {
+      proc.stdout.on('data', async (data) => {
         debugTor(data.toString().trim())
         if (data.toString().indexOf('Bootstrapped 100%') !== -1) {
           await delay(TOR_WAIT_TIMEOUT)

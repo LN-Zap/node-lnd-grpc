@@ -5,7 +5,7 @@ import { remoteHost } from './helpers/grpc'
 const { host, cert, macaroon, lndconenctString } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
-test('connect (paths)', async t => {
+test('connect (paths)', async (t) => {
   t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
   try {
@@ -19,7 +19,7 @@ test('connect (paths)', async t => {
   }
 })
 
-test('connect (lndconnect)', async t => {
+test('connect (lndconnect)', async (t) => {
   t.plan(2)
   const grpc = new LndGrpc({ lndconnectUri: lndconenctString })
   try {

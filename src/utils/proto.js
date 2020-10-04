@@ -38,7 +38,7 @@ export const getLatestProtoVersion = () => {
  * @param  {[type]}  info [description]
  * @return {Promise}      [description]
  */
-export const getClosestProtoVersion = async versionString => {
+export const getClosestProtoVersion = async (versionString) => {
   debug('Testing version string: %s', versionString)
   let [version, commitString] = versionString.split(' ')
 

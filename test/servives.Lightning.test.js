@@ -8,7 +8,7 @@ const grpcOptions = { host, cert, macaroon }
 
 let grpc
 
-test('Lightning.invoices', async t => {
+test('Lightning.invoices', async (t) => {
   t.plan(3)
 
   // Initiate connection.
@@ -25,11 +25,11 @@ test('Lightning.invoices', async t => {
   )
 
   // Add invoice stream listeners.
-  const promise = new Promise(async resolve => {
-    call.on('data', function(data) {
+  const promise = new Promise(async (resolve) => {
+    call.on('data', function (data) {
       t.equal(data.value, 100, 'should create an invoice')
     })
-    call.on('error', function(error) {
+    call.on('error', function (error) {
       t.equal(error.code, status.CANCELLED, 'call.cancel() should cancel an invoice subscription stream')
       if (error.code === status.CANCELLED) {
         return resolve()
@@ -48,6 +48,6 @@ test('Lightning.invoices', async t => {
   await promise
 })
 
-test('Lightning.invoices:teardown', async t => {
+test('Lightning.invoices:teardown', async (t) => {
   await grpc.disconnect()
 })

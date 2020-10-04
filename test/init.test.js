@@ -5,7 +5,7 @@ import { remoteHost } from './helpers/grpc'
 const { host, cert, macaroon } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
-test('initialize', t => {
+test('initialize', (t) => {
   t.plan(14)
   const grpc = new LndGrpc(grpcOptions)
   t.equal(grpc.state, 'ready', 'should start in the ready state')
@@ -24,7 +24,7 @@ test('initialize', t => {
   t.true(grpc.services.WalletKit, `should have WalletKit service`)
 })
 
-test('constructor (paths)', t => {
+test('constructor (paths)', (t) => {
   t.plan(3)
   const grpc = new LndGrpc(grpcOptions)
   t.equal(grpc.options.host, host, 'should extract the host')
@@ -32,7 +32,7 @@ test('constructor (paths)', t => {
   t.equal(grpc.options.macaroon, macaroon, 'should extract the macaroon')
 })
 
-test('constructor (lndconnect)', t => {
+test('constructor (lndconnect)', (t) => {
   t.plan(3)
   const lndconnectUri = `lndconnect://${host}?cert=${cert}&macaroon=${macaroon}`
   const grpc = new LndGrpc({ lndconnectUri })

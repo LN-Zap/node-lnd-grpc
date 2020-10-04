@@ -5,12 +5,12 @@ import { spawnLnd, killLnd, grpcOptions } from './helpers/lnd'
 let lndProcess
 let grpc
 
-test('genSeed:setup', async t => {
+test('genSeed:setup', async (t) => {
   lndProcess = await spawnLnd({ cleanLndDir: true })
   t.end()
 })
 
-test('genSeed:test', async t => {
+test('genSeed:test', async (t) => {
   try {
     grpc = new LndGrpc(grpcOptions)
     await grpc.connect()
@@ -25,7 +25,7 @@ test('genSeed:test', async t => {
   }
 })
 
-test('genSeed:teardown', async t => {
+test('genSeed:teardown', async (t) => {
   await grpc.disconnect()
   await killLnd(lndProcess, { cleanLndDir: true })
   t.end()

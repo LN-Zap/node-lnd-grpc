@@ -151,7 +151,7 @@ class Service extends EventEmitter {
     try {
       // Find the most recent proto file for this service if a specific version was not requested.
       this.version = version || this.version || getLatestProtoVersion()
-      const serviceDefinition = registry[this.version].services.find(s => s.name === this.serviceName)
+      const serviceDefinition = registry[this.version].services.find((s) => s.name === this.serviceName)
       const [protoPackage, protoFile] = serviceDefinition.proto.split('/')
       const filepath = join(protoDir || getProtoDir(), this.version, protoPackage, protoFile)
       this.debug(
@@ -212,7 +212,7 @@ class Service extends EventEmitter {
       PROBE_TIMEOUT,
     )
     const deadline = getDeadline(PROBE_TIMEOUT)
-    const checkState = async err => {
+    const checkState = async (err) => {
       let now = new Date().getTime()
       const isExpired = now > deadline
       if (err && isExpired) {
@@ -237,7 +237,7 @@ class Service extends EventEmitter {
    * @param {Object} service service description used to extract apply method details
    */
   wrapAsync(service) {
-    Object.values(service).forEach(method => {
+    Object.values(service).forEach((method) => {
       const { originalName } = method
       // Do not override existing methods.
       if (this[originalName]) {

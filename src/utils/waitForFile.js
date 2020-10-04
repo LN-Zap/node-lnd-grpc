@@ -26,7 +26,7 @@ const waitForFile = (filepath, timeout = 1000) => {
   })
 
   // This promise checks the filsystem every 200ms looking for the file, and resolves when the file has been found.
-  let checkFileExists = new Promise(resolve => {
+  let checkFileExists = new Promise((resolve) => {
     let intervalId = setInterval(async () => {
       debug('waiting for file: %s', filepath)
       try {

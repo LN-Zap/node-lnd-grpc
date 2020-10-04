@@ -70,7 +70,7 @@ const v11Services = [
     proto: 'lnrpc/walletunlocker.proto',
   },
 ]
-v11Services.map(service => {
+v11Services.map((service) => {
   if (service.name === 'WalletUnlocker') {
     service.proto = 'lnrpc/walletunlocker.proto'
   }

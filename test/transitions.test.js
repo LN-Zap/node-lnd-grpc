@@ -6,7 +6,7 @@ import { clearnetHost } from './helpers/grpc'
 const { host, cert, macaroon } = clearnetHost
 const grpcOptions = { host, cert, macaroon }
 
-test('ready -> connect (locked)', async t => {
+test('ready -> connect (locked)', async (t) => {
   sinon.restore()
   t.plan(1)
   const grpc = new LndGrpc(grpcOptions)
@@ -22,7 +22,7 @@ test('ready -> connect (locked)', async t => {
   }
 })
 
-test('ready -> connect (active)', async t => {
+test('ready -> connect (active)', async (t) => {
   sinon.restore()
   t.plan(1)
   const grpc = new LndGrpc(grpcOptions)
@@ -38,7 +38,7 @@ test('ready -> connect (active)', async t => {
   }
 })
 
-test('locked -> connect', async t => {
+test('locked -> connect', async (t) => {
   sinon.restore()
   t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
@@ -53,7 +53,7 @@ test('locked -> connect', async t => {
   await grpc.disconnect()
 })
 
-test('active -> connect', async t => {
+test('active -> connect', async (t) => {
   sinon.restore()
   t.plan(2)
   const grpc = new LndGrpc(grpcOptions)
@@ -68,7 +68,7 @@ test('active -> connect', async t => {
   await grpc.disconnect()
 })
 
-test('locked -> disconnect', async t => {
+test('locked -> disconnect', async (t) => {
   sinon.restore()
   t.plan(1)
   const grpc = new LndGrpc(grpcOptions)
@@ -83,7 +83,7 @@ test('locked -> disconnect', async t => {
   }
 })
 
-test('active -> disconnect', async t => {
+test('active -> disconnect', async (t) => {
   sinon.restore()
   t.plan(1)
   const grpc = new LndGrpc(grpcOptions)

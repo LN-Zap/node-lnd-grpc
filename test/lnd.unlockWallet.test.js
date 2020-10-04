@@ -5,12 +5,12 @@ import { spawnLnd, killLnd, grpcOptions, seed } from './helpers/lnd'
 let lndProcess
 let grpc
 
-test('unlockWallet:setup', async t => {
+test('unlockWallet:setup', async (t) => {
   lndProcess = await spawnLnd({ cleanLndDir: true })
   t.end()
 })
 
-test('unlockWallet:test', async t => {
+test('unlockWallet:test', async (t) => {
   t.plan(1)
   try {
     // Create a new node.
@@ -40,7 +40,7 @@ test('unlockWallet:test', async t => {
   }
 })
 
-test('unlockWallet:teardown', async t => {
+test('unlockWallet:teardown', async (t) => {
   await grpc.disconnect()
   await killLnd(lndProcess, { cleanLndDir: true })
   t.end()

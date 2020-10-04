@@ -28,12 +28,12 @@ export const spawnLnd = (options = {}) => {
   ])
 
   // Listen for when neutrino prints data to stderr.
-  process.stderr.pipe(split2()).on('data', line => {
+  process.stderr.pipe(split2()).on('data', (line) => {
     log(line)
   })
 
   // Listen for when neutrino prints data to stdout.
-  process.stdout.pipe(split2()).on('data', line => {
+  process.stdout.pipe(split2()).on('data', (line) => {
     log(line)
   })
 

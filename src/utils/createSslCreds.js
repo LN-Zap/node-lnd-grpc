@@ -12,7 +12,7 @@ const readFile = promisify(fs.readFile)
  * @param {String} certPath
  * @returns {grpc.ChanelCredentials}
  */
-const createSslCreds = async certPath => {
+const createSslCreds = async (certPath) => {
   let lndCert
   if (certPath) {
     // If the cert has been provided in PEM format, use as is.
@@ -26,7 +26,7 @@ const createSslCreds = async certPath => {
     }
     // Otherwise, lets treat it as a file path.
     else {
-      lndCert = await readFile(untildify(certPath)).catch(e => {
+      lndCert = await readFile(untildify(certPath)).catch((e) => {
         const error = new Error(`SSL cert path could not be accessed: ${e.message}`)
         error.code = 'LND_GRPC_CERT_ERROR'
         throw error
