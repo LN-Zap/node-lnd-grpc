@@ -78,6 +78,9 @@ v11Services.map((service) => {
 })
 
 export default {
+  '0.11.1-beta': {
+    services: v11Services,
+  },
   '0.11.0-beta': {
     services: v11Services,
   },
