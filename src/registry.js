@@ -77,7 +77,12 @@ v11Services.map((service) => {
   return service
 })
 
+const v12Services = [...v11Services]
+
 export default {
+  '0.12.0-beta': {
+    services: v12Services,
+  },
   '0.11.1-beta': {
     services: v11Services,
   },
