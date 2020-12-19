@@ -34,6 +34,7 @@ const DEFAULT_OPTIONS = {
   connectionOptions: {
     'grpc.max_send_message_length': -1,
     'grpc.max_receive_message_length': -1,
+    'grpc.keepalive_permit_without_calls': 1,
   },
 }
 
