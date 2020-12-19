@@ -2,7 +2,7 @@ import { join } from 'path'
 import EventEmitter from 'events'
 import defaultsDeep from 'lodash.defaultsdeep'
 import { credentials, loadPackageDefinition, status, Metadata } from '@grpc/grpc-js'
-import { load } from '@ln-zap/proto-loader'
+import { load } from '@grpc/proto-loader'
 import StateMachine from 'javascript-state-machine'
 import debug from 'debug'
 import {
