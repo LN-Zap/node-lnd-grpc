@@ -3146,6 +3146,9 @@ message Payment {
 }
 
 message HTLCAttempt {
+    // The unique ID that is used for this attempt.
+    uint64 attempt_id = 7;
+
     enum HTLCStatus {
         IN_FLIGHT = 0;
         SUCCEEDED = 1;
@@ -3281,6 +3284,12 @@ enum FeatureBit {
     PAYMENT_ADDR_OPT = 15;
     MPP_REQ = 16;
     MPP_OPT = 17;
+    WUMBO_CHANNELS_REQ = 18;
+    WUMBO_CHANNELS_OPT = 19;
+    ANCHORS_REQ = 20;
+    ANCHORS_OPT = 21;
+    ANCHORS_ZERO_FEE_HTLC_REQ = 22;
+    ANCHORS_ZERO_FEE_HTLC_OPT = 23;
 }
 
 message Feature {
