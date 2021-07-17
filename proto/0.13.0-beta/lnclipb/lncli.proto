@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "verrpc/verrpc.proto";
+import "../verrpc/verrpc.proto";
 
 package lnclipb;
 

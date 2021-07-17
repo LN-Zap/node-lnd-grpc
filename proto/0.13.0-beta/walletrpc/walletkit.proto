@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "rpc.proto";
-import "signrpc/signer.proto";
+import "../lnrpc/rpc.proto";
+import "../signrpc/signer.proto";
 
 package walletrpc;
 
