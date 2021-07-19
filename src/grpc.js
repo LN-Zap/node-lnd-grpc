@@ -21,6 +21,7 @@ import {
   Invoices,
   Router,
   Signer,
+  State,
   Versioner,
   WalletKit,
 } from './services'
@@ -80,6 +81,7 @@ class LndGrpc extends EventEmitter {
       Invoices,
       Router,
       Signer,
+      State,
       Versioner,
       WalletKit,
     ]

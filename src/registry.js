@@ -83,7 +83,7 @@ const v13Services = [
   ...v12Services,
   {
     name: 'State',
-    proto: 'stateservice/stateservice.proto',
+    proto: 'stateservicerpc/stateservice.proto',
   },
 ]
 
