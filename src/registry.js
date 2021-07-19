@@ -79,7 +79,13 @@ v11Services.map((service) => {
 
 const v12Services = [...v11Services]
 
-const v13Services = [...v12Services]
+const v13Services = [
+  ...v12Services,
+  {
+    name: 'State',
+    proto: 'stateservice/stateservice.proto',
+  },
+]
 
 export default {
   '0.13.0-beta': {
