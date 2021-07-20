@@ -261,51 +261,27 @@ class LndGrpc extends EventEmitter {
     debug('Attempting to determine wallet state')
     let walletState
     try {
-      await this.services.WalletUnlocker.connect()
-      // Call the unlockWallet method with a missing password argument.
-      // This is a way of probing the api to determine it's state.
-      await this.services.WalletUnlocker.unlockWallet()
-    } catch (error) {
-      switch (error.code) {
-        /*
-          `UNIMPLEMENTED` indicates that the requested operation is not implemented or not supported/enabled in the
-           service. This implies that the wallet is already unlocked, since the WalletUnlocker service is not active.
-           See
-
-           `DEADLINE_EXCEEDED` indicates that the deadline expired before the operation could complete. In the case of
-           our probe here the likely cause of this is that we are connecting to an lnd node where the `noseedbackup`
-           flag has been set and therefore the `WalletUnlocker` interace is non-functional.
-
-           https://github.com/grpc/grpc-node/blob/master/packages/grpc-native-core/src/constants.js#L129.
-         */
-        case status.UNIMPLEMENTED:
-        case status.DEADLINE_EXCEEDED:
+      walletState =  await this.services.State.getState()
+      switch (walletState) {
+        case 'RPC_ACTIVE':
           debug('Determined wallet state as:', WALLET_STATE_ACTIVE)
           walletState = WALLET_STATE_ACTIVE
           return walletState
 
-        /**
-          `UNKNOWN` indicates that unlockWallet was called without an argument which is invalid.
-          This implies that the wallet is waiting to be unlocked.
-        */
-        case status.UNKNOWN:
-          debug('Determined wallet state as:', WALLET_STATE_LOCKED)
-          walletState = WALLET_STATE_LOCKED
-          return walletState
+        case 'LOCKED':
+         debug('Determined wallet state as:', WALLET_STATE_LOCKED)
+         walletState = WALLET_STATE_LOCKED
+         return walletState
 
-        /**
-          Bubble all other errors back to the caller and abort the connection attempt.
-          Disconnect all services.
-        */
-        default:
-          console.error(error)
-          debug('Unable to determine wallet state', error)
-          throw error
+         default:
+           console.error(error)
+           debug('Unable to determine wallet state', error)
+           throw error
       }
-    } finally {
-      if (!options.keepalive && this.can('disconnect')) {
-        await this.disconnect()
-      }
+    } catch (error) {
+        console.error(error)
+        debug('Unable to determine wallet state', error)
+        throw error
     }
   }
 
