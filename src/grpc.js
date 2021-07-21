@@ -261,8 +261,10 @@ class LndGrpc extends EventEmitter {
     debug('Attempting to determine wallet state')
     let walletState
     try {
+      await this.services.State.connect()
       walletState =  await this.services.State.getState()
-      switch (walletState) {
+
+      switch (walletState.state) {
         case 'RPC_ACTIVE':
           debug('Determined wallet state as:', WALLET_STATE_ACTIVE)
           walletState = WALLET_STATE_ACTIVE
@@ -272,16 +274,15 @@ class LndGrpc extends EventEmitter {
          debug('Determined wallet state as:', WALLET_STATE_LOCKED)
          walletState = WALLET_STATE_LOCKED
          return walletState
-
-         default:
-           console.error(error)
-           debug('Unable to determine wallet state', error)
-           throw error
       }
     } catch (error) {
         console.error(error)
         debug('Unable to determine wallet state', error)
         throw error
+    } finally {
+      if (!options.keepalive && this.can('disconnect')) {
+        await this.disconnect()
+      }
     }
   }
 

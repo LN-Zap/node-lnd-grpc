@@ -83,9 +83,17 @@ const v13Services = [
   ...v12Services,
   {
     name: 'State',
-    proto: 'stateservicerpc/stateservice.proto',
+    proto: 'lnrpc/stateservice.proto',
   },
 ]
+
+v13Services.map((service) => {
+  if (service.name === 'State') {
+    service.proto = 'lnrpc/stateservice.proto'
+  }
+  return service
+})
+
 
 export default {
   '0.13.0-beta': {

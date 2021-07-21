@@ -12,9 +12,9 @@ class State extends Service {
     this.useMacaroon = false
   }
 
-  async getState() {
-    this.debug(`Calling ${this.serviceName}.getState`)
-    const res = await promisifiedCall(this, this.getState)
+  async getState(payload = {}, options = {}) {
+    this.debug(`Calling ${this.serviceName}.getState with payload: %o`, { payload, options })
+    const res = await promisifiedCall(this.service, this.service.getState, payload, options)
     return res
   }
 }
