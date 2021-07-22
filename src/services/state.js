@@ -9,7 +9,7 @@ import Service from '../service'
 class State extends Service {
   constructor(options) {
     super('State', options)
-    this.useMacaroon = false
+    this.useMacaroon = true
   }
 
   async getState(payload = {}, options = {}) {

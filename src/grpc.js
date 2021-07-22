@@ -262,8 +262,9 @@ class LndGrpc extends EventEmitter {
 
     await this.services.Lightning.connect()
     let versionString = await this.services.Lightning.getInfo()
-    this.services.Lightning.disconnect()
     let [version, commitString] = versionString.version.split(' ')
+    await this.services.Lightning.disconnect()
+
     let walletState
 
     try {

@@ -96,6 +96,9 @@ v13Services.map((service) => {
 
 
 export default {
+  '0.13.1-beta': {
+    services: v13Services,
+  },
   '0.13.0-beta': {
     services: v13Services,
   },
