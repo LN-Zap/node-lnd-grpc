@@ -260,11 +260,11 @@ class LndGrpc extends EventEmitter {
   async determineWalletState(options = { keepalive: false }) {
     debug('Attempting to determine wallet state')
 
-    await this.services.Lightning.connect()
-    let versionString = await this.services.Lightning.getInfo()
-    let [version, commitString] = versionString.version.split(' ')
-    await this.services.Lightning.disconnect()
-
+    // await this.services.Lightning.connect()
+    // let versionString = await this.services.Lightning.getInfo()
+    // let [version, commitString] = versionString.version.split(' ')
+    // await this.services.Lightning.disconnect()
+    let version = '0.13.2 testme'
     let walletState
 
     try {
