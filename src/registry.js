@@ -79,7 +79,29 @@ v11Services.map((service) => {
 
 const v12Services = [...v11Services]
 
+const v13Services = [
+  ...v12Services,
+  {
+    name: 'State',
+    proto: 'lnrpc/stateservice.proto',
+  },
+]
+
+v13Services.map((service) => {
+  if (service.name === 'State') {
+    service.proto = 'lnrpc/stateservice.proto'
+  }
+  return service
+})
+
+
 export default {
+  '0.13.1-beta': {
+    services: v13Services,
+  },
+  '0.13.0-beta': {
+    services: v13Services,
+  },
   '0.12.0-beta': {
     services: v12Services,
   },
