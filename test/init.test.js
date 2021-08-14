@@ -6,7 +6,7 @@ const { host, cert, macaroon } = remoteHost
 const grpcOptions = { host, cert, macaroon }
 
 test('initialize', (t) => {
-  t.plan(14)
+  t.plan(15)
   const grpc = new LndGrpc(grpcOptions)
   t.equal(grpc.state, 'ready', 'should start in the ready state')
   t.equal(grpc.can('activateWalletUnlocker'), true, 'can activateWalletUnlocker')
@@ -21,6 +21,7 @@ test('initialize', (t) => {
   t.true(grpc.services.Invoices, `should have Invoices service`)
   t.true(grpc.services.Router, `should have Router service`)
   t.true(grpc.services.Signer, `should have Signer service`)
+  t.true(grpc.services.State, `should have State service`)
   t.true(grpc.services.WalletKit, `should have WalletKit service`)
 })
 
