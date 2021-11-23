@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash.clonedeep'
+
 const commonServices = [
   {
     name: 'WalletUnlocker',
@@ -9,7 +11,7 @@ const commonServices = [
   },
 ]
 
-const v6Servicves = [
+const v6Servicves = cloneDeep([
   ...commonServices,
   {
     name: 'Autopilot',
@@ -35,41 +37,36 @@ const v6Servicves = [
     name: 'WalletKit',
     proto: 'walletrpc/walletkit.proto',
   },
-]
+])
 
-const v7Services = [
+const v7Services = cloneDeep([
   ...v6Servicves,
   {
     name: 'Watchtower',
-    proto: 'watchtowerrpc/watchtowerrpc.proto',
+    proto: 'watchtowerrpc/watchtower.proto',
   },
-]
+])
 
-const v8Services = [
+const v8Services = cloneDeep([
   ...v7Services,
   {
     name: 'WatchtowerClient',
-    proto: 'wtclientrpc/wtclientrpc.proto',
+    proto: 'wtclientrpc/wtclient.proto',
   },
-]
+])
 
-const v9Services = [...v8Services]
+const v9Services = cloneDeep([...v8Services])
 
-const v10Services = [
+const v10Services = cloneDeep([
   ...v9Services,
   {
     name: 'Versioner',
     proto: 'verrpc/verrpc.proto',
   },
-]
+])
 
-const v11Services = [
-  ...v10Services,
-  {
-    name: 'WalletUnlocker',
-    proto: 'lnrpc/walletunlocker.proto',
-  },
-]
+const v11Services = cloneDeep([...v10Services])
+
 v11Services.map((service) => {
   if (service.name === 'WalletUnlocker') {
     service.proto = 'lnrpc/walletunlocker.proto'
@@ -77,25 +74,29 @@ v11Services.map((service) => {
   return service
 })
 
-const v12Services = [...v11Services]
+const v12Services = cloneDeep([...v11Services])
 
-const v13Services = [
+const v13Services = cloneDeep([
   ...v12Services,
   {
     name: 'State',
     proto: 'lnrpc/stateservice.proto',
   },
-]
+])
 
-v13Services.map((service) => {
-  if (service.name === 'State') {
-    service.proto = 'lnrpc/stateservice.proto'
+const v14Services = cloneDeep([...v13Services])
+
+v14Services.map((service) => {
+  if (service.name === 'Lightning') {
+    service.proto = 'lnrpc/lightning.proto'
   }
   return service
 })
 
-
 export default {
+  '0.14.0-beta': {
+    services: v14Services,
+  },
   '0.13.1-beta': {
     services: v13Services,
   },
