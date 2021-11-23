@@ -26,6 +26,8 @@ import {
   State,
   Versioner,
   WalletKit,
+  Watchtower,
+  WatchtowerClient
 } from './services'
 import registry from './registry'
 
@@ -86,7 +88,10 @@ class LndGrpc extends EventEmitter {
       State,
       Versioner,
       WalletKit,
+      Watchtower,
+      WatchtowerClient
     ]
+
     this.services = {}
     this.tor = tor()
 
@@ -136,12 +141,14 @@ class LndGrpc extends EventEmitter {
 
     try {
       // Subscribe to wallet state and get current state
-      let currentState = await this.getWalletState()
+      let { state } = await this.getWalletState()
+      if (state == 'WAITING_TO_START') {
+        state = await this.checkWalletState(['NON_EXISTING', 'LOCKED']);
+      }
 
-      switch (currentState.state) {
+      switch (state) {
         case 'NON_EXISTING':
         case 'LOCKED':
-        case 'WAITING_TO_START':
           walletState = WALLET_STATE_LOCKED
           break
         case 'UNLOCKED': // Do nothing.
@@ -344,12 +351,14 @@ class LndGrpc extends EventEmitter {
    * @param  {string} state state to wait for (RPC_ACTIVE, LOCKED, UNLOCKED)
    * @return {Promise<Object>}.
    */
-  checkWalletState(state) {
+  checkWalletState(states) {
+    states = [].concat(states)
     const waitForState = resolve => {
       return this.services.State.getState()
         .then(currentState => {
-          if (currentState.state === state) {
-            resolve(true)
+          debug('Got wallet state as %o', currentState)
+          if (states.includes(currentState.state)) {
+            resolve(currentState.state)
           } else {
             setTimeout(_ => waitForState(resolve), 400);
           }
@@ -402,7 +411,7 @@ class LndGrpc extends EventEmitter {
     }
 
     const currentState = await this.services.State.getState()
-    debug(`Got wallet state as ${currentState}`)
+    debug('Got wallet state as %o', currentState)
     return currentState
   }
 }
