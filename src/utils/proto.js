@@ -6,7 +6,7 @@ import registry from '../registry'
 const debug = createDebug('lnrpc:proto')
 
 export const GRPC_LOWEST_VERSION = '0.4.2-beta'
-export const GRPC_HIGHEST_STABLE_VERSION = '0.14.0-beta'
+export const GRPC_HIGHEST_STABLE_VERSION = '0.14.1-beta'
 
 /**
  * Get the directory where rpc.proto files are stored.
