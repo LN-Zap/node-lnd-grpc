@@ -154,6 +154,7 @@ class LndGrpc extends EventEmitter {
         case 'UNLOCKED': // Do nothing.
           break
         case 'RPC_ACTIVE':
+        case 'SERVER_ACTIVE':
           walletState = WALLET_STATE_ACTIVE
           break
       }
@@ -235,9 +236,9 @@ class LndGrpc extends EventEmitter {
   async onBeforeActivateLightning() {
     const { Lightning, WalletUnlocker } = this.services
 
-    // await for RPC_ACTIVE state before interacting if needed
+    // await for RPC_ACTIVE or SERVER_ACTIVE state before interacting if needed
     if (this.isStateServiceAvailable) {
-      await this.checkWalletState('RPC_ACTIVE')
+      await this.checkWalletState(['RPC_ACTIVE', 'SERVER_ACTIVE'])
     }
 
     // Disconnect wallet unlocker if its connected.
