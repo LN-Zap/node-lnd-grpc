@@ -58,7 +58,7 @@
     "lnd-binary": "0.3.25",
     "prettier": "2.3.2",
     "prettier-eslint": "11.0.0",
-    "prettier-eslint-cli": "5.0.0",
+    "prettier-eslint-cli": "6.0.1",
     "rimraf": "3.0.2",
     "sinon": "9.2.4",
     "source-map-support": "0.5.19",
