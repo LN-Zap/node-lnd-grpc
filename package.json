@@ -78,6 +78,6 @@
     "lodash.defaultsdeep": "4.6.1",
     "semver": "7.3.5",
     "untildify": "4.0.0",
-    "validator": "13.6.0"
+    "validator": "13.9.0"
   }
 }
