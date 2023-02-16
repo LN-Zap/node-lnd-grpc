@@ -141,7 +141,8 @@ class LndGrpc extends EventEmitter {
 
     try {
       // Subscribe to wallet state and get current state
-      let { state } = await this.getWalletState()
+      let state = await this.getWalletState()
+
       if (state == 'WAITING_TO_START') {
         state = await this.checkWalletState(['NON_EXISTING', 'LOCKED'])
       }
@@ -165,6 +166,7 @@ class LndGrpc extends EventEmitter {
         walletState = await this.determineWalletState()
       }
     }
+
     switch (walletState) {
       case WALLET_STATE_LOCKED:
         await this.activateWalletUnlocker()
@@ -403,16 +405,16 @@ class LndGrpc extends EventEmitter {
 
   /**
    * Get current wallet state
-   * @return {Promise<Object>}.
+   * @return {Promise<string>}.
    */
   async getWalletState() {
     if (this.services.State.can('connect')) {
       await this.services.State.connect()
     }
 
-    const currentState = await this.services.State.getState()
-    debug('Got wallet state as %o', currentState)
-    return currentState
+    const { state } = await this.services.State.getState()
+    debug('Got wallet state as %o', state)
+    return state
   }
 }
 
