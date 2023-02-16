@@ -94,6 +94,12 @@ v14Services.map((service) => {
 })
 
 export default {
+  '0.14.4-beta': {
+    services: v14Services,
+  },
+  '0.14.3-beta': {
+    services: v14Services,
+  },
   '0.14.2-beta': {
     services: v14Services,
   },
