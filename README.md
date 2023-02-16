@@ -275,6 +275,7 @@ Under the hood we use the [`grpc-js`](https://github.com/grpc/grpc-node/tree/mas
   oneofs: true,
 }
 ```
+
 (Note: when dealing with channel IDs and other fields that can exceed JavaScript's Number.MAX_SAFE_INTEGER, loss of precision can occur. This can be avoided by using `longs: String` on the above gRPC options and dealing with `String`s instead of `Number`s.)
 
 These settings can be overridden by passing `grpcOptions` to the constructor. Custom settings will be merged in with the above defaults.

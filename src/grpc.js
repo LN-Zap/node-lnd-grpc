@@ -27,7 +27,7 @@ import {
   Versioner,
   WalletKit,
   Watchtower,
-  WatchtowerClient
+  WatchtowerClient,
 } from './services'
 import registry from './registry'
 
@@ -89,7 +89,7 @@ class LndGrpc extends EventEmitter {
       Versioner,
       WalletKit,
       Watchtower,
-      WatchtowerClient
+      WatchtowerClient,
     ]
 
     this.services = {}
@@ -141,9 +141,10 @@ class LndGrpc extends EventEmitter {
 
     try {
       // Subscribe to wallet state and get current state
-      let { state } = await this.getWalletState()
+      let state = await this.getWalletState()
+
       if (state == 'WAITING_TO_START') {
-        state = await this.checkWalletState(['NON_EXISTING', 'LOCKED']);
+        state = await this.checkWalletState(['NON_EXISTING', 'LOCKED'])
       }
 
       switch (state) {
@@ -165,6 +166,7 @@ class LndGrpc extends EventEmitter {
         walletState = await this.determineWalletState()
       }
     }
+
     switch (walletState) {
       case WALLET_STATE_LOCKED:
         await this.activateWalletUnlocker()
@@ -354,16 +356,15 @@ class LndGrpc extends EventEmitter {
    */
   checkWalletState(states) {
     states = [].concat(states)
-    const waitForState = resolve => {
-      return this.services.State.getState()
-        .then(currentState => {
-          debug('Got wallet state as %o', currentState)
-          if (states.includes(currentState.state)) {
-            resolve(currentState.state)
-          } else {
-            setTimeout(_ => waitForState(resolve), 400);
-          }
-        })
+    const waitForState = (resolve) => {
+      return this.services.State.getState().then((currentState) => {
+        debug('Got wallet state as %o', currentState)
+        if (states.includes(currentState.state)) {
+          resolve(currentState.state)
+        } else {
+          setTimeout((_) => waitForState(resolve), 400)
+        }
+      })
     }
     return promiseTimeout(CONNECT_WAIT_TIMEOUT * 1000, new Promise(waitForState), 'Connection timeout out.')
   }
@@ -404,16 +405,16 @@ class LndGrpc extends EventEmitter {
 
   /**
    * Get current wallet state
-   * @return {Promise<Object>}.
+   * @return {Promise<string>}.
    */
   async getWalletState() {
     if (this.services.State.can('connect')) {
       await this.services.State.connect()
     }
 
-    const currentState = await this.services.State.getState()
-    debug('Got wallet state as %o', currentState)
-    return currentState
+    const { state } = await this.services.State.getState()
+    debug('Got wallet state as %o', state)
+    return state
   }
 }
 

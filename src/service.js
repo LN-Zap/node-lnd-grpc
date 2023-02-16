@@ -137,17 +137,8 @@ class Service extends EventEmitter {
    */
   async establishConnection(options = {}) {
     const opts = defaultsDeep(options, this.options)
-    const {
-      host,
-      cert,
-      macaroon,
-      protoDir,
-      waitForCert,
-      waitForMacaroon,
-      grpcOptions,
-      connectionOptions,
-      version,
-    } = opts
+    const { host, cert, macaroon, protoDir, waitForCert, waitForMacaroon, grpcOptions, connectionOptions, version } =
+      opts
 
     try {
       // Find the most recent proto file for this service if a specific version was not requested.
