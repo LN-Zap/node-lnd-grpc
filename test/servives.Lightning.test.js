@@ -1,19 +1,24 @@
 import test from 'tape-promise/tape'
 import { status } from '@grpc/grpc-js'
-import { remoteHost } from './helpers/grpc'
 import LndGrpc from '../src'
+import { spawnLnd, killLnd, grpcOptions, seed } from './helpers/lnd'
 
-const { host, cert, macaroon } = remoteHost
-const grpcOptions = { host, cert, macaroon }
-
+let lndProcess
 let grpc
 
-test('Lightning.invoices', async (t) => {
-  t.plan(3)
+test('Lightning.invoices:setup', async (t) => {
+  lndProcess = await spawnLnd({ cleanLndDir: true })
+  t.end()
+})
 
-  // Initiate connection.
+test('Lightning.invoices', async (t) => {
   grpc = new LndGrpc(grpcOptions)
   await grpc.connect()
+  await grpc.services.WalletUnlocker.initWallet({
+    wallet_password: Buffer.from('password'),
+    cipher_seed_mnemonic: seed,
+  })
+  await grpc.activateLightning()
 
   // Subscribe to invoice stream.
   const call = grpc.services.Lightning.subscribeInvoices()
@@ -37,17 +42,13 @@ test('Lightning.invoices', async (t) => {
     })
   })
 
-  try {
-    await grpc.services.Lightning.addInvoice({ value: 100 })
-    await promise
-  } catch (e) {
-    t.equal(e.details, 'permission denied', 'should not allow creating an invoice with a readonly macaroon')
-  }
   call && call.cancel()
-
   await promise
+  t.end()
 })
 
 test('Lightning.invoices:teardown', async (t) => {
   await grpc.disconnect()
+  await killLnd(lndProcess, { cleanLndDir: true })
+  t.end()
 })

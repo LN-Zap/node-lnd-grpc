@@ -1,9 +1,6 @@
 import test from 'tape-promise/tape'
 import LndGrpc from '../src'
-import { remoteHost } from './helpers/grpc'
-
-const { host, cert, macaroon } = remoteHost
-const grpcOptions = { host, cert, macaroon }
+import { grpcOptions, host, cert, macaroon } from './helpers/lnd'
 
 test('initialize', (t) => {
   t.plan(15)

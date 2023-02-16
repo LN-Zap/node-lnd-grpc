@@ -1,16 +1,34 @@
 import test from 'tape-promise/tape'
 import sinon from 'sinon'
 import LndGrpc from '../src'
-import { clearnetHost } from './helpers/grpc'
+import { seed, host, cert, macaroon, spawnLnd, killLnd, grpcOptions } from './helpers/lnd'
 
-const { host, cert, macaroon } = clearnetHost
-const grpcOptions = { host, cert, macaroon }
+let lndProcess
+let grpc
+
+test('transactions:setup', async (t) => {
+  lndProcess = await spawnLnd({ cleanLndDir: true })
+
+  grpc = new LndGrpc(grpcOptions)
+  await grpc.connect()
+
+  await grpc.services.WalletUnlocker.initWallet({
+    wallet_password: Buffer.from('password'),
+    cipher_seed_mnemonic: seed,
+  })
+  await grpc.activateLightning()
+  await grpc.disconnect()
+
+  t.end()
+})
 
 test('ready -> connect (locked)', async (t) => {
   sinon.restore()
   t.plan(1)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
+  sinon.stub(grpc, 'getWalletState').resolves('LOCKED')
+
   try {
     const stub = sinon.stub(grpc.fsm, 'activateWalletUnlocker')
     await grpc.connect()
@@ -25,7 +43,7 @@ test('ready -> connect (locked)', async (t) => {
 test('ready -> connect (active)', async (t) => {
   sinon.restore()
   t.plan(1)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   try {
     const stub = sinon.stub(grpc.fsm, 'activateLightning')
@@ -41,7 +59,7 @@ test('ready -> connect (active)', async (t) => {
 test('locked -> connect', async (t) => {
   sinon.restore()
   t.plan(2)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   try {
     await grpc.connect()
@@ -56,7 +74,7 @@ test('locked -> connect', async (t) => {
 test('active -> connect', async (t) => {
   sinon.restore()
   t.plan(2)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   try {
     await grpc.connect()
@@ -71,7 +89,7 @@ test('active -> connect', async (t) => {
 test('locked -> disconnect', async (t) => {
   sinon.restore()
   t.plan(1)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_LOCKED')
   try {
     await grpc.connect()
@@ -86,7 +104,7 @@ test('locked -> disconnect', async (t) => {
 test('active -> disconnect', async (t) => {
   sinon.restore()
   t.plan(1)
-  const grpc = new LndGrpc(grpcOptions)
+  grpc = new LndGrpc(grpcOptions)
   sinon.stub(grpc, 'determineWalletState').resolves('WALLET_STATE_ACTIVE')
   try {
     await grpc.connect()
@@ -96,4 +114,10 @@ test('active -> disconnect', async (t) => {
     await grpc.disconnect()
     t.fail(e)
   }
+})
+
+test('transactions:teardown', async (t) => {
+  grpc.disconnect()
+  await killLnd(lndProcess, { cleanLndDir: true })
+  t.end()
 })

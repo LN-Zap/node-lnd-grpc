@@ -4,7 +4,10 @@ import { spawn } from 'child_process'
 import rimraf from 'rimraf'
 import { extensions } from 'lnd-binary'
 import split2 from 'split2'
+import { encode, format, encodeCert, encodeMacaroon } from 'lndconnect'
 import debug from 'debug'
+import fs from 'fs'
+const readFileSync = fs.readFileSync
 
 const log = debug(`lnrpc:test`)
 
@@ -22,7 +25,7 @@ export const spawnLnd = (options = {}) => {
     '--bitcoin.active',
     '--bitcoin.testnet',
     '--bitcoin.node=neutrino',
-    '--neutrino.connect=testnet3-btcd.zaphq.io',
+    // '--neutrino.connect=testnet3-btcd.zaphq.io',
     // '--noseedbackup',
     // '--notls=1',
   ])
