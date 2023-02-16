@@ -12,7 +12,7 @@
     "test-tor": "DEBUG=lnrpc* TOR=true babel-tape-runner test/grpc.test.js | tap-spec",
     "lint": "prettier-eslint --write \"$PWD/**/*.{js,json,md}\"",
     "build": "npm run clean && cross-env NODE_ENV=production babel src --out-dir dist",
-    "clean": "rimraf -r ./dist",
+    "clean": "rimraf ./dist",
     "preversion": "npm test",
     "prepack": "npm run build"
   },
